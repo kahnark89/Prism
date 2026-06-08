@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prism — Parent Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+         background: #0f0f14; color: #e8e4f0; min-height: 100vh; }
+  header { padding: 24px 32px; border-bottom: 1px solid #2a2535;
+           display: flex; align-items: center; gap: 16px; }
+  header h1 { font-size: 1.4rem; font-weight: 600; color: #c4b5fd; }
+  header span { font-size: 0.85rem; color: #6b6480; }
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid #2a2535; padding: 0 32px; }
+  .tab { padding: 12px 20px; cursor: pointer; font-size: 0.85rem; color: #6b6480;
+         border-bottom: 2px solid transparent; transition: all 0.15s; }
+  .tab.active { color: #c4b5fd; border-bottom-color: #c4b5fd; }
+  .tab:hover { color: #a78bfa; }
+  .panel { display: none; padding: 28px 32px; }
+  .panel.active { display: block; }
+  .section-title { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em;
+                   text-transform: uppercase; color: #6b6480; margin-bottom: 16px; }
+  .card { background: #17151f; border: 1px solid #2a2535; border-radius: 12px;
+          padding: 20px; margin-bottom: 16px; }
+  .card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; }
+  .concept-row { display: flex; align-items: center; gap: 12px;
+                 padding: 10px 0; border-bottom: 1px solid #1e1b2a; }
+  .concept-row:last-child { border-bottom: none; }
+  .concept-name { font-weight: 600; min-width: 120px; font-size: 0.9rem; }
+  .bar-wrap { flex: 1; background: #0f0f14; border-radius: 100px; height: 8px; overflow: hidden; }
+  .bar { height: 100%; border-radius: 100px; transition: width 0.4s; }
+  .bar.exploring { background: #6b6480; }
+  .bar.getting_it { background: #a78bfa; }
+  .bar.owns_it    { background: #4ade80; }
+  .status-chip { font-size: 0.7rem; padding: 2px 8px; border-radius: 100px; font-weight: 600; }
+  .status-chip.exploring { background: #2a2535; color: #6b6480; }
+  .status-chip.getting_it { background: #3b2f6e; color: #a78bfa; }
+  .status-chip.owns_it { background: #14532d; color: #4ade80; }
+  .confirm-btn { font-size: 0.75rem; padding: 4px 10px; border-radius: 6px;
+                 background: #1e1b2a; border: 1px solid #3b3550; color: #c4b5fd;
+                 cursor: pointer; transition: background 0.15s; }
+  .confirm-btn:hover { background: #3b2f6e; }
+  .log-entry { font-size: 0.82rem; padding: 10px 0; border-bottom: 1px solid #1e1b2a;
+               line-height: 1.5; }
+  .log-entry:last-child { border-bottom: none; }
+  .log-entry .concept { color: #a78bfa; font-weight: 600; }
+  .log-entry .time { color: #4a4560; font-size: 0.75rem; margin-bottom: 2px; }
+  .codebook-item { display: flex; align-items: center; gap: 12px; padding: 8px 0;
+                   border-bottom: 1px solid #1e1b2a; }
+  .codebook-item:last-child { border-bottom: none; }
+  .codebook-name { min-width: 130px; font-size: 0.88rem; font-weight: 500; }
+  .codebook-count { font-size: 0.75rem; color: #6b6480; min-width: 40px; text-align: right; }
+  .chart-wrap { position: relative; height: 240px; }
+  .empty { color: #4a4560; font-size: 0.85rem; padding: 20px 0; text-align: center; }
+  .setting-row { display: flex; justify-content: space-between; align-items: center;
+                 padding: 12px 0; border-bottom: 1px solid #1e1b2a; }
+  .setting-row:last-child { border-bottom: none; }
+  .setting-label { font-size: 0.88rem; }
+  .setting-value { font-size: 0.85rem; color: #a78bfa; }
+  .danger-btn { background: #3b0000; border: 1px solid #7f1d1d; color: #f87171;
+                padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.82rem; }
+  .danger-btn:hover { background: #7f1d1d; }
+  .refresh-btn { float: right; font-size: 0.75rem; padding: 4px 10px; border-radius: 6px;
+                 background: #1e1b2a; border: 1px solid #3b3550; color: #6b6480;
+                 cursor: pointer; }
+  .refresh-btn:hover { color: #c4b5fd; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>✦ Prism</h1>
+    <span id="child-name-header">Parent Dashboard</span>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('grounding')">Learning</div>
+  <div class="tab" onclick="showTab('memory')">Memory</div>
+  <div class="tab" onclick="showTab('log')">Activity Log</div>
+  <div class="tab" onclick="showTab('settings')">Settings</div>
+</div>
+
+<!-- GROUNDING TAB -->
+<div class="panel active" id="tab-grounding">
+  <div class="section-title">
+    Concept Confidence
+    <button class="refresh-btn" onclick="loadGrounding()">↺ refresh</button>
+  </div>
+  <div class="card">
+    <div id="grounding-list"><div class="empty">Loading…</div></div>
+  </div>
+  <div class="section-title" style="margin-top:24px;">Confirm Outside-World Instance</div>
+  <div class="card" style="font-size:0.85rem; color:#6b6480; line-height:1.6;">
+    If your child used a concept on their own — away from Prism — tap <strong style="color:#c4b5fd">Confirm</strong>
+    next to that concept above. This is a strong learning signal. Prism never eavesdrops — only you can add this.
+  </div>
+</div>
+
+<!-- MEMORY TAB -->
+<div class="panel" id="tab-memory">
+  <div class="section-title">
+    Interest Codebook
+    <button class="refresh-btn" onclick="loadCodebook()">↺ refresh</button>
+  </div>
+  <div class="card">
+    <div class="chart-wrap"><canvas id="codebook-chart"></canvas></div>
+  </div>
+  <div class="section-title" style="margin-top:24px;">Episodic Memories</div>
+  <div class="card">
+    <div id="memory-list"><div class="empty">Loading…</div></div>
+  </div>
+</div>
+
+<!-- LOG TAB -->
+<div class="panel" id="tab-log">
+  <div class="section-title">
+    Recent Activity (CIAER Log)
+    <button class="refresh-btn" onclick="loadLog()">↺ refresh</button>
+  </div>
+  <div class="card">
+    <div id="log-list"><div class="empty">Loading…</div></div>
+  </div>
+</div>
+
+<!-- SETTINGS TAB -->
+<div class="panel" id="tab-settings">
+  <div class="section-title">Device Settings</div>
+  <div class="card" id="settings-card">
+    <div class="empty">Loading…</div>
+  </div>
+  <div class="section-title" style="margin-top:24px; color:#f87171;">Privacy Controls</div>
+  <div class="card">
+    <p style="font-size:0.85rem; color:#6b6480; margin-bottom:16px; line-height:1.6;">
+      Recognition templates are stored on-device only and are never sent to the cloud.
+      Deleting them resets Prism to mechanical mode — the next enrollment will re-trigger the awakening.
+    </p>
+    <button class="danger-btn" onclick="deleteTemplates()">Delete Recognition Templates</button>
+  </div>
+</div>
+
+<script>
+const API = '/api';
+let codebookChart = null;
+
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    const names = ['grounding','memory','log','settings'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'grounding') loadGrounding();
+  if (name === 'memory') { loadCodebook(); loadMemory(); }
+  if (name === 'log') loadLog();
+  if (name === 'settings') loadSettings();
+}
+
+async function api(path) {
+  const r = await fetch(API + path);
+  return r.json();
+}
+
+function fmtTime(ts) {
+  if (!ts) return '';
+  const d = new Date(ts * 1000);
+  return d.toLocaleString();
+}
+
+async function loadGrounding() {
+  const records = await api('/grounding/trajectories');
+  const el = document.getElementById('grounding-list');
+  if (!records.length) { el.innerHTML = '<div class="empty">No concepts tracked yet.</div>'; return; }
+  el.innerHTML = records.map(r => `
+    <div class="concept-row">
+      <div class="concept-name">${r.concept}</div>
+      <div class="bar-wrap"><div class="bar ${r.status}" style="width:${Math.round(r.confidence*100)}%"></div></div>
+      <div style="font-size:0.75rem;color:#6b6480;min-width:32px">${Math.round(r.confidence*100)}%</div>
+      <span class="status-chip ${r.status}">${r.status.replace('_',' ')}</span>
+      <button class="confirm-btn" onclick="parentConfirm('${r.concept}')">Confirm ✓</button>
+    </div>
+  `).join('');
+}
+
+async function parentConfirm(concept) {
+  const r = await fetch(API + '/grounding/parent-confirm', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({concept}),
+  });
+  const data = await r.json();
+  if (data.ok) loadGrounding();
+}
+
+async function loadCodebook() {
+  const items = await api('/memory/codebook');
+  if (!items.length) return;
+  const labels = items.slice(0,12).map(i => i.concept);
+  const values = items.slice(0,12).map(i => Math.round(i.strength * 100));
+  if (codebookChart) codebookChart.destroy();
+  const ctx = document.getElementById('codebook-chart').getContext('2d');
+  codebookChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: 'rgba(167,139,250,0.7)',
+        borderColor: '#a78bfa',
+        borderWidth: 1,
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#6b6480' }, grid: { color: '#1e1b2a' } },
+        y: { ticks: { color: '#6b6480' }, grid: { color: '#1e1b2a' }, max: 100 },
+      }
+    }
+  });
+}
+
+async function loadMemory() {
+  const data = await api('/memory/graph');
+  const el = document.getElementById('memory-list');
+  const nodes = data.nodes || [];
+  if (!nodes.length) { el.innerHTML = '<div class="empty">No memories yet.</div>'; return; }
+  const sorted = [...nodes].sort((a,b) => b.strength - a.strength);
+  el.innerHTML = sorted.slice(0,20).map(n => `
+    <div class="codebook-item">
+      <div class="codebook-name">${n.concept}<br><span style="color:#4a4560;font-size:0.75rem">${n.episode}</span></div>
+      <div class="bar-wrap"><div class="bar getting_it" style="width:${Math.round(n.strength*100)}%"></div></div>
+      <div style="font-size:0.75rem;color:#6b6480;min-width:36px">${Math.round(n.strength*100)}%</div>
+      <div class="codebook-count">×${n.rehearsals}</div>
+    </div>
+  `).join('');
+}
+
+async function loadLog() {
+  const records = await api('/learning-log?limit=50');
+  const el = document.getElementById('log-list');
+  if (!records.length) { el.innerHTML = '<div class="empty">No activity yet.</div>'; return; }
+  el.innerHTML = records.map(r => `
+    <div class="log-entry">
+      <div class="time">${fmtTime(r.timestamp)}</div>
+      <span class="concept">${r.cause || '?'}</span>
+      ${r.intuition ? ` — "${r.intuition}"` : ''}
+      ${r.result ? ` → <em style="color:#4ade80">${r.result}</em>` : ''}
+      ${r.model_revision ? ` <span style="color:#fbbf24">↻ revised</span>` : ''}
+    </div>
+  `).join('');
+}
+
+async function loadSettings() {
+  const s = await api('/settings');
+  const el = document.getElementById('settings-card');
+  document.getElementById('child-name-header').textContent = `${s.child_name || 'Child'}'s Dashboard`;
+  el.innerHTML = `
+    <div class="setting-row"><div class="setting-label">Child name</div><div class="setting-value">${s.child_name}</div></div>
+    <div class="setting-row"><div class="setting-label">Active companion</div><div class="setting-value">${s.active_companion}</div></div>
+    <div class="setting-row"><div class="setting-label">LLM model</div><div class="setting-value">${s.llm_model}</div></div>
+    <div class="setting-row"><div class="setting-label">Hardware mode</div><div class="setting-value">${s.use_mock_hal ? 'mock (laptop)' : 'Raspberry Pi'}</div></div>
+    <div class="setting-row"><div class="setting-label">Dashboard port</div><div class="setting-value">${s.dashboard_port}</div></div>
+  `;
+}
+
+async function deleteTemplates() {
+  if (!confirm('Delete all recognition templates? Prism will return to mechanical mode until re-enrolled.')) return;
+  const r = await fetch(API + '/recognition/templates', {method:'DELETE'});
+  const data = await r.json();
+  alert(data.message || (data.ok ? 'Done.' : 'Error.'));
+}
+
+// Load grounding on first paint
+loadGrounding();
+</script>
+</body>
+</html>

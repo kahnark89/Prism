@@ -1,0 +1,55 @@
+# Hardware
+use_mock_hal: true
+camera_resolution: [640, 480]
+
+# Inner Life Engine
+lambda_homeostasis: 0.08
+noise_magnitude: 0.02
+noise_autocorr: 0.8
+rhythm_depth: 1.0
+coupling_scale: 1.0
+event_kick_decay: 0.6
+growth_rate_per_day: 0.012
+growth_cap: 0.18
+
+# Memory Engine
+tau_base: 2.0
+tau_salience_scale: 14.0
+salience_gate: 0.35
+rehearsal_kick: 0.5
+consolidation_factor: 0.35
+prune_floor: 0.05
+spreading_activation: 0.4
+codebook_strength_per_encode: 0.25
+codebook_salience_bonus: 0.2
+
+# Perspective / LLM
+llm_provider: "anthropic"
+llm_model: "claude-haiku-4-5-20251001"
+llm_timeout_s: 8.0
+offline_fallback_enabled: true
+
+# Safety
+safety_blocked_patterns: []
+
+# Circadian
+wake_hour: 7.0
+nap_hour: 13.0
+bed_hour: 19.5
+
+# Persistence
+data_dir: "~/.prism/data"
+
+# Dashboard
+dashboard_host: "0.0.0.0"
+dashboard_port: 8080
+
+# Active companion and child
+active_companion: "pip"
+child_name: "Naomi"
+
+# Orchestrator timing
+tick_interval_s: 5.0
+decay_interval_s: 1800.0
+save_interval_s: 120.0
+idle_timeout_s: 180.0

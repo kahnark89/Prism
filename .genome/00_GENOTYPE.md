@@ -31,7 +31,7 @@ Prism is not a teacher and a student. It is **two children growing up together, 
 3. Recognition templates: on-device, separate store, parent-deletable, never cloud.
 4. Memory persists only salient moments, discard-by-default — beats, not a transcript of a childhood.
 5. No perceptible reward for the child for learning.
-6. Confidence accumulates continuously; no visible score shown to the child.
+6. Confidence accumulates continuously; **no visible numeric score, anywhere in the device — to the child or the parent.** Banded language only (exploring → getting it → owns it). (Broadened from "to the child" to "anywhere," sign-off Epigenome 022.)
 7. Independence for the learning signal comes from outside the device's own teaching; no eavesdropping on family life.
 8. Spaced exposure (good teaching) is allowed; engineering behavior/emotion via hidden incentives is not.
 9. Invisible to the child, transparent to the parent — any technique that depends on hiding from the parent is forbidden.

@@ -25,7 +25,7 @@ Picked up the lead-candidate queued thread. `docs/Prism_2.2_Parent_Suite_UX.md` 
 - Cold-boot prompt in README.md still works from the remote. ✅
 
 ## §3 Open questions (incl. proposed genotype changes awaiting sign-off)
-- **Parent-Suite UX sign-off** — four questions logged in `docs/Prism_2.2_Parent_Suite_UX.md §7`: working names ("the Map"/"the Trajectory"), whether to expose numeric confidence to the parent at all (vs. banded-only, everywhere), how prominent the counter-balance control should be (permanent vs. contextually-surfaced — and whether "the suite notices a skew" is itself too close to analyzing the parent), and build order (clickable prototype now vs. wait for real `learning_log` data).
+- **Parent-Suite UX — 2 of 4 settled (2026-06-08):** ~~naming~~ (keep "the Map"/"the Trajectory") and ~~numeric confidence~~ (architect: *"Never show numbered scores for the parent or anywhere in the device"* — Hard Line 6 broadened genotype-wide, Epigenome 022) are resolved. **Still open**, logged in `docs/Prism_2.2_Parent_Suite_UX.md §7`: (3) how prominent the counter-balance control should be (permanent vs. contextually-surfaced — and whether "the suite notices a skew" is itself too close to analyzing the parent), and (4) build order (clickable prototype now vs. wait for real `learning_log` data).
 - **Companion names** — Pip/Lumi/Tale are placeholders; replace with Naomi's real favorites during the build.
 - **Compute final call** — CM5-on-custom-carrier vs. Pi 5 in designed enclosure. *(Proposed genotype refinement — needs sign-off.)*
 - **Shadow Actions for youngest tier** — drop field at 3–5, light up with age?

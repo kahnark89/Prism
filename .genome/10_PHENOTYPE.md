@@ -1,18 +1,18 @@
 # 10_PHENOTYPE — Prism (live state)
 
 > High-churn file. Any client updates this freely. This is "what we're doing right now."
-> **Last touched:** 2026-05-31 by Claude Code (remote) · analysis + tool extraction session complete.
+> **Last touched:** 2026-06-08 by Claude Code (remote) · Parent-Suite UX spec drafted (Doc 2.2).
 > **Pending ratification:** 2 unconfirmed deeper-why hypotheses in Epigenome 016, 017 (018 ratified into 019). Confirm/edit/drop when convenient.
 
 ---
 
 ## §1 Current focus
-**ANALYSIS + TOOL EXTRACTION COMPLETE — awaiting architect direction on next Prism design thread.**
+**DESIGN THREAD 1 IN PROGRESS — Parent-Suite UX (Doc 2.2 drafted, awaiting architect review).**
 
-This session produced: three architectural analysis docs (`docs/analysis/`), two developer tool specs extracted to dedicated repos (`kahnark89/animus-sdk`, `kahnark89/cortex-dev`), and zip files for both tool repos ready to seed new sessions.
+Picked up the lead-candidate queued thread. `docs/Prism_2.2_Parent_Suite_UX.md` converges the grounding-signal view (Doc 1.8 §3) and the environment-shaping/counter-balance tool (Genotype Principle 12 / Epigenome 020) into **one structure** — a per-concept record (menu status + exposure history + grounding level + provenance) — and shows that absence-visibility isn't a fourth feature bolted on for inspectability, but a structural consequence of that record's shape: the same field that renders "present" renders "absent," so the tool cannot draw one without the other. Spec covers two surfaces (the Map / the Trajectory), the control set (incl. counter-balance as menu-only, never diner-facing — the Hard-Line-12 asymmetry made literal), the volunteer channel kept deliberately separate, and a pass against the one-line tests. Four open questions logged in the doc §7 for architect sign-off (naming, whether to expose numeric confidence to parents, counter-balance discoverability, build order).
 
-**Prism design state (unchanged):** Both magic pillars specified + simulated (Inner Life Doc 2.0, Memory Doc 2.1). Co-evolution is the seated organizing principle (genotype). Three queued design threads (priority order):
-1. **Parent-suite UX** — converge grounding-signal view, environment-shaping tool, absence-visibility
+**Remaining queued design threads (priority order):**
+1. ~~Parent-suite UX~~ — **in progress**, see Doc 2.2
 2. **Awakening choreography spec** — five-beat sequence (pause/spark/bloom/first breath/settle), audio + haptic + LED
 3. **Mission 0 — First Light** — camera → TFLite → speech, offline, one weekend build
 
@@ -25,7 +25,7 @@ This session produced: three architectural analysis docs (`docs/analysis/`), two
 - Cold-boot prompt in README.md still works from the remote. ✅
 
 ## §3 Open questions (incl. proposed genotype changes awaiting sign-off)
-- **Next design thread** — parent-suite UX vs. Awakening spec vs. Mission 0. (Architect decision.)
+- **Parent-Suite UX sign-off** — four questions logged in `docs/Prism_2.2_Parent_Suite_UX.md §7`: working names ("the Map"/"the Trajectory"), whether to expose numeric confidence to the parent at all (vs. banded-only, everywhere), how prominent the counter-balance control should be (permanent vs. contextually-surfaced — and whether "the suite notices a skew" is itself too close to analyzing the parent), and build order (clickable prototype now vs. wait for real `learning_log` data).
 - **Companion names** — Pip/Lumi/Tale are placeholders; replace with Naomi's real favorites during the build.
 - **Compute final call** — CM5-on-custom-carrier vs. Pi 5 in designed enclosure. *(Proposed genotype refinement — needs sign-off.)*
 - **Shadow Actions for youngest tier** — drop field at 3–5, light up with age?
@@ -38,7 +38,8 @@ This session produced: three architectural analysis docs (`docs/analysis/`), two
 
 ## §5 Deliverables on hand (in docs/)
 - `Prism_Master_Architecture_v1.md` — canonical reference (consolidates Docs 01–1.8).
-- Component docs 01, 1.5, 1.6, 1.7, 1.8 — detailed source documents.
+- Component docs 01, 1.5, 1.6, 1.7, 1.8, 2.0, 2.1, 2.2 — detailed source documents.
+- `Prism_2.2_Parent_Suite_UX.md` — converged spec: grounding-signal view + environment-shaping tool + absence-visibility as one structure (the Map / the Trajectory).
 - `The_Genome_Protocol.md` — the protocol this folder implements.
 - `analysis/01_Soul_Mouth_Separation.md` — standalone architectural analysis.
 - `analysis/02_Co_Evolution_Organizing_Principle.md` — standalone architectural analysis.

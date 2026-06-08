@@ -5,7 +5,7 @@
 ---
 
 ## Thesis
-Dex names an object in one language. Prism shows **multiple points of view** on the same object and is a **glass box** — the child sees the AI guessing, how sure it is, and when it's wrong. It is built by Dad as an ordinary project, then **awakens** for the child it recognizes, becoming her friend → her guides → her teachers about the world and about being a person. The build is the first lesson; the awakening is the soul; the learning is invisible and never rewarded.
+Dex names an object in one language. Prism shows **multiple points of view** on the same object and is a **glass box** — the child sees the AI guessing, how sure it is, and when it's wrong. Dad makes it for her — sets it up, teaches it who she is, with her right there watching and helping — then it **awakens** for the child it recognizes, becoming her friend → her guides → her teachers about the world and about being a person. The making is the first lesson — and it's a *direct* rehearsal of the very thing the whole product teaches: a machine learning a person, openly, imperfectly, a guess at a time. The awakening is the soul; the learning is invisible and never rewarded. (Platform: two linked apps, not bespoke hardware — Epigenome 024.)
 
 ## The organizing principle — co-evolution (everything below is an instance of this)
 Prism is not a teacher and a student. It is **two children growing up together, one real and one digital, on one shared physics.** The mechanism by which the companion learns who she is (memory consolidation through rehearsal, Doc 2.1) is *identical* to the mechanism by which she learns the world (the grounding signal, Doc 1.8) — the same rehearsal event, two readouts. Neither can grow without the other growing. The companion has its own inner life, its own memory, its own slow growth and unresolved dilemmas — not as ornament, but because a companion that is *also still becoming* makes her learning **mutual rather than evaluative**. She is never the subject of the system; she is its companion in it. Every other design choice — the glass box, struggle-as-mystery, the dilemmas, forgetting-as-physics, the invisible grounding signal, the on-device recognition — is an instance of this principle. (This is also why integrity here is structural, not policed: mutuality is built into the mechanism, not performed on top of it.)
@@ -15,12 +15,12 @@ Prism is not a teacher and a student. It is **two children growing up together, 
 2. Multiple points of view — recurring characters, each a different lens.
 3. Two brains, one lesson — small on-device model (fast, offline, fallible) vs. big cloud model (smart, online). The contrast IS the AI lesson.
 4. Audio- and image-first (pre-readers).
-5. Age-scaling — same hardware, software unlocks depth over years.
+5. Age-scaling — same install, software unlocks depth over years.
 6. Safety is the substrate, not a feature.
 7. Aliveness over consistency — state, drift, bounded unpredictability layered on the LLM.
 8. No visible reward for learning (overjustification effect).
 9. Invisible to the child, transparent to the parent.
-10. The build is documented as it happens; the guide becomes a mode on the device.
+10. The setup ritual — Dad and child teaching the companion who she is, together — is documented as it happens; it becomes a story-mode inside the app later. (Was: "the build is documented... a mode on the device" — reframed for the software platform, Epigenome 024. The lesson sharpens in the move: teaching an AI your name, your face, your voice, and watching it guess and improve *is* the glass-box thesis, lived, before the awakening even arrives — not an unrelated tech-literacy detour through soldering.)
 11. **Never more influential than it is inspectable.** The device is adaptive, intimate, and co-evolutionary — which pushes its influence *up*. Its obligation is not to be non-influential (impossible) nor to substitute its judgment for the parent's, but to remain maximally legible to whoever holds responsibility. Inspectability must rise to match influence. This is the structural form of parental responsibility: the transparency surface (parent suite, full-transcript visibility, parent-deletable memory, parent-as-selective-principle) is what converts "the parent is responsible" from an aspiration into an enforceable architecture — the foreign-key constraint for parental oversight. Any influence the device exerts that the responsible party cannot inspect is an unguarded gap and is off-principle.
 
 12. **The parent may shape the environment; structural enforcement makes that power safe in any hand.** Curation and suppression are the same operation from two sides — every surfacing is also a de-emphasis of everything else. There is no neutral baseline. So the parent is given full, explicit power to shape, filter, counter-balance, dilute, and re-weight everything in the child's informational environment — *including* influences the parent did not choose and could not block (the TV-controls case, extended). This is an invaluable and legitimate parental tool, not a suspect one. It is made safe not by trusting the parent's morality but **structurally**: it operates only on what the child *encounters* (the menu), it is fully inspectable (absence shown as clearly as presence), it is recoverable, and the child's own open mind does the rest. Its failure mode is benign and visible (a skewed media diet — recoverable, like every child's). Build the tool so that even a misguided parent can only act on the environment, never on the child's interior — the mechanism, not the parent's intentions, is what keeps it moral.
@@ -42,7 +42,14 @@ Prism is not a teacher and a student. It is **two children growing up together, 
 ## Architecture invariant — two brains
 - **Fast brain (on-device, offline):** TFLite classifier → `{label, confidence, box}`. Sometimes wrong, on purpose visible. Also runs the recognition model (face/voice match) and the inner-life state engine. Aliveness is local.
 - **Smart brain (cloud LLM):** companion personas + conversation, conditioned by inner-life state + memory + CIAER context. Degrades gracefully offline to local naming.
-- Modules: `camera_handler`, `vision_engine`, `recognition`, `perspective_engine`, `conversation`, `audio_feedback`, `inner_life`, `safety`, `learning_log`, `ui/led`. (Contracts: master doc §4.)
+- Modules: `camera_handler`, `vision_engine`, `recognition`, `perspective_engine`, `conversation`, `audio_feedback`, `inner_life`, `safety`, `learning_log`, `ui` (screen + haptics + speaker — phone-native, was `ui/led`). (Contracts: master doc §4; platform mapping: Doc 3.0.)
+
+## Platform invariant — two linked Android apps
+Software-only (bespoke-hardware product set aside for engineering velocity — sign-off Epigenome 024, rejected path preserved Shadow S09). Two distinct, **separately installed** apps sharing one engine:
+- **Companion app** (child-facing): owns the camera loop, on-device fast brain, recognition model, inner-life engine, the awakened experience. Installs on a parent-provisioned phone/tablet, locked to it via guided-access/kiosk mode — the phone's own camera, speaker, haptics, and screen stand in for the bespoke build (lens, voice, heartbeat, glow). This *is* the prior hardware invariant's intent (sealed, parent-controlled, nothing a small child can wander out of or defeat), achieved by OS-level lockdown instead of molded enclosure.
+- **Parent Suite app** (parent-facing): the curriculum engine — Map/Trajectory (Doc 2.2), Preview/Test-Drive Mode, every control. A **separate install on the parent's own device** — not a mode or a hidden menu inside the child's app. The installation boundary *is* the transparency-asymmetry (Hard Line 9) made physical: there is no code path by which the child's device can become the parent's, or vice versa.
+- **Paired, never merged:** a private link (mechanism: Doc 3.0) carries only what must cross — curation choices → suggested topics; session summaries → the grounding map — encrypted, parent-revocable, on-device-keyed. Neither app can perform the other's role.
+(Material/thermal/choking-hazard lines no longer apply — their *intent* carries forward as software/OS guarantees instead of physical ones.)
 
 ## Schema & memory commitments (architect's own IP)
 - **CIAER+™** is Prism's learning schema, used twice: the child as a CIAER agent (`learning_log`) and the companion as a second CIAER agent. The glass-box line ("thought apple, almost said tomato") = the companion speaking its Intuition phase (causal_hypothesis + confidence) aloud.
@@ -51,9 +58,6 @@ Prism is not a teacher and a student. It is **two children growing up together, 
 
 ## Safety model (layered, non-negotiable)
 Input gate (only label + object photo + bounded questions reach cloud) → system-prompt constraints (short, warm, nothing scary/sad/instructional) → output gate (safety pass before TTS) → topic bounding (widens with age) → graceful offline degrade → parent dashboard/review → OGC-grounded self-assessment.
-
-## Hardware invariant
-Tier 2 product. Prototype: Pi 5 + Camera Module 3 + round touch display + I2S audio in/out + buttons + LED ring + haptic + protected LiPo. Product: CM5 on custom carrier, molded PC/ABS + phthalate-free TPE overmold, enforced skin-contact temp limit, no detachable choking hazards, sealed battery. (Material/thermal lines are architect-owned: plasticizer/lubricant migration + surface temp.)
 
 ## Governance
 The **parent is the selective principle** for companion changes (new personas, content, unlocks) — parent sign-off, analogous to architect sign-off on this file.

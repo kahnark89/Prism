@@ -7,13 +7,17 @@
 ---
 
 ## §1 Current focus
-**DESIGN THREAD 1 IN PROGRESS — Parent-Suite UX (Doc 2.2 drafted, awaiting architect review).**
+**DESIGN THREAD 1 SETTLED — Parent-Suite UX (Doc 2.2 complete, all open questions resolved by architect 2026-06-08). Ready to pick up thread 2.**
 
-Picked up the lead-candidate queued thread. `docs/Prism_2.2_Parent_Suite_UX.md` converges the grounding-signal view (Doc 1.8 §3) and the environment-shaping/counter-balance tool (Genotype Principle 12 / Epigenome 020) into **one structure** — a per-concept record (menu status + exposure history + grounding level + provenance) — and shows that absence-visibility isn't a fourth feature bolted on for inspectability, but a structural consequence of that record's shape: the same field that renders "present" renders "absent," so the tool cannot draw one without the other. Spec covers two surfaces (the Map / the Trajectory), the control set (incl. counter-balance as menu-only, never diner-facing — the Hard-Line-12 asymmetry made literal), the volunteer channel kept deliberately separate, and a pass against the one-line tests. Four open questions logged in the doc §7 for architect sign-off (naming, whether to expose numeric confidence to parents, counter-balance discoverability, build order).
+`docs/Prism_2.2_Parent_Suite_UX.md` converges the grounding-signal view (Doc 1.8 §3) and the environment-shaping/counter-balance tool (Genotype Principle 12 / Epigenome 020) into **one structure** — a per-concept record (menu status + exposure history + grounding level + provenance) — where absence-visibility falls out of the record's shape rather than being a feature bolted on: the same field renders "present" and "absent," so the tool cannot draw one without the other. Spec covers two surfaces (the Map / the Trajectory), the full control set, the volunteer channel kept deliberately separate, a pass against the one-line tests, and — added this round — a **Parent Preview / Test-Drive Mode** (§6): the parent runs the *real* system end-to-end on their own test inputs and configures everything *before* the child's first session, so nothing about the live product is ever a surprise. All four open questions are now closed:
+1. Naming → keep "the Map" / "the Trajectory."
+2. Numeric confidence → **genotype change** (Hard Line 6 broadened, Epigenome 022): no visible numeric score anywhere, to anyone — banded language only, full stop.
+3. Counter-balance discoverability → permanent, always-visible, glass-box control (Epigenome 023).
+4. Build order → reframed by the architect into a requirement: the whole system must be parent-previewable before child activation (Epigenome 023) — this is now a committed build requirement, not just a sequencing call.
 
 **Remaining queued design threads (priority order):**
-1. ~~Parent-suite UX~~ — **in progress**, see Doc 2.2
-2. **Awakening choreography spec** — five-beat sequence (pause/spark/bloom/first breath/settle), audio + haptic + LED
+1. ~~Parent-suite UX~~ — **done**, see Doc 2.2 (zero open questions remain)
+2. **Awakening choreography spec** — five-beat sequence (pause/spark/bloom/first breath/settle), audio + haptic + LED. *(Note: Doc 2.2 §8 flags that the Preview Mode will need to walk this sequence too once it's specified — the two threads will need to reconcile.)*
 3. **Mission 0 — First Light** — camera → TFLite → speech, offline, one weekend build
 
 ## §2 Acceptance (how we know the current phase is done)
@@ -25,7 +29,8 @@ Picked up the lead-candidate queued thread. `docs/Prism_2.2_Parent_Suite_UX.md` 
 - Cold-boot prompt in README.md still works from the remote. ✅
 
 ## §3 Open questions (incl. proposed genotype changes awaiting sign-off)
-- **Parent-Suite UX — 2 of 4 settled (2026-06-08):** ~~naming~~ (keep "the Map"/"the Trajectory") and ~~numeric confidence~~ (architect: *"Never show numbered scores for the parent or anywhere in the device"* — Hard Line 6 broadened genotype-wide, Epigenome 022) are resolved. **Still open**, logged in `docs/Prism_2.2_Parent_Suite_UX.md §7`: (3) how prominent the counter-balance control should be (permanent vs. contextually-surfaced — and whether "the suite notices a skew" is itself too close to analyzing the parent), and (4) build order (clickable prototype now vs. wait for real `learning_log` data).
+- **Parent-Suite UX — CLOSED (2026-06-08):** all four questions resolved by the architect; see §1 above and `docs/Prism_2.2_Parent_Suite_UX.md §8` for the full record. One forward-looking note carried into thread 2: the Parent Preview Mode (Doc 2.2 §6) will need to walk the awakening-choreography sequence once that spec exists — flag this when starting that thread so the two reconcile rather than diverge.
+- **Next design thread** — Awakening choreography spec is next in the queue (architect may redirect).
 - **Companion names** — Pip/Lumi/Tale are placeholders; replace with Naomi's real favorites during the build.
 - **Compute final call** — CM5-on-custom-carrier vs. Pi 5 in designed enclosure. *(Proposed genotype refinement — needs sign-off.)*
 - **Shadow Actions for youngest tier** — drop field at 3–5, light up with age?

@@ -58,7 +58,7 @@ All controls write to the same per-concept record (§1), so every action immedia
 - **Add / remove from the menu** — direct toggle on any tile. Removing doesn't delete the concept from Prism's library (nothing the child has already encountered is erased from her own grounding record — Hard Line 4 governs *Prism's* memory of *her*, not the parent's curation choices); it moves the tile to "Absent — by your hand," with the reason auto-logged (so the parent can later remember *why* they set it aside).
 - **Pacing** — a simple push-more / hold-back / let-it-breathe control per active concept, feeding the suggested-topics signal to the LLM (Doc 1.8 §3, "parent sets the *what*, LLM optimizes the *how*").
 - **Boundaries** — two distinct controls, kept visually distinct so they're never confused: *off-limits* (hard exclude, parent-set, no auto-expiry) vs. *wait for later* (age-gate, carries an approximate unlock age, auto-promotes to "on offer" when she crosses it — with the parent notified, not surprised).
-- **Counter-balance** — the TV-controls-extended capability seated in Epigenome 020: when an influence the parent didn't choose and couldn't block is shaping her world (a show, a relative's framing, a peer's enthusiasm), the parent can add *weight* to the menu — more of another perspective, another character "into" the counter-topic — without ever touching what's already landed in her. This is **adding to the menu, never editing the diner**: the tool has no control surface that targets something already internal to her (no "reduce her attachment to X," only "offer more of Y"). That asymmetry isn't a UI choice — it's the only form the control can take, because Hard Line 12 means the other form doesn't exist in the system at all.
+- **Counter-balance** — the TV-controls-extended capability seated in Epigenome 020: when an influence the parent didn't choose and couldn't block is shaping her world (a show, a relative's framing, a peer's enthusiasm), the parent can add *weight* to the menu — more of another perspective, another character "into" the counter-topic — without ever touching what's already landed in her. This is **adding to the menu, never editing the diner**: the tool has no control surface that targets something already internal to her (no "reduce her attachment to X," only "offer more of Y"). That asymmetry isn't a UI choice — it's the only form the control can take, because Hard Line 12 means the other form doesn't exist in the system at all. **Discoverability — settled (2026-06-08, Epigenome 023):** *permanent, always-visible control, full stop.* The architect's ruling: *"keep it a glass box. nothing hidden from the parent."* This also dissolves the recursive worry logged in Epigenome 021 (would the suite have to "notice a skew" in the parent's choices to surface this contextually, which is itself a form of modeling the parent?) — a permanent control needs no such inference. The tool is simply always there, like every other control on the Map; the suite never has to *decide* whether to show it to *this* parent.
 
 ---
 
@@ -70,7 +70,24 @@ It surfaces instead as occasional, optional, non-nagging prompts at natural mome
 
 ---
 
-## 6. Why this passes the tests
+## 6. Pre-activation transparency — the parent test-drives the whole system first
+
+**Settled (2026-06-08, Epigenome 023).** The architect's ruling on build order went further than "build a prototype" — it named a product requirement: *"yes for transparency — we don't want it to be a surprise later for the parent. They should be able to view and test the whole system before deciding to let the child play with it."*
+
+This is the temporal half of Principle 11 ("never more influential than it is inspectable") that the doc hadn't yet named: inspectability can't only arrive *alongside* influence (the live parent suite, reviewed after sessions happen) — it has to be available **before the parent ever commits the child to a session.** A glass box you can only inspect after the fact is half a glass box.
+
+**What this means concretely — a Parent Preview / Test-Drive Mode:**
+
+- **It runs the real system, not a demo of it.** Same companion logic, same safety gates, same input/output pipeline, same logging — fed by the parent's own test inputs (point the camera at a mug, ask it something off-topic, see what gets through and what gets redirected) instead of the child's. **No gap between the demo and the product** — the single most trust-corroding pattern in consumer tech, and the opposite of "glass box."
+- **It walks the whole loop, not just the suite.** Hear each companion persona's voice and tone. See a sample object-recognition pass, including the fast brain being visibly, admittedly wrong sometimes (Design Principle 1 — that's a feature to preview, not a bug to hide). Trip the safety gate on purpose and see exactly what happens. Open the parent suite itself with seed/sample data so the Map and Trajectory aren't a cold, unfamiliar surface on day one.
+- **It's where first configuration happens — before, not during, the child's first session.** Character selection, topic boundaries, age tier, all the controls in §4 — set once, calmly, with full information, rather than improvised mid-session under a curious toddler's gaze. The child's *first* real session is then already inside bounds the parent chose with full knowledge, not a cold start the parent has to react to.
+- **Nothing the parent discovers in preview mode is new information once the child starts using the device.** That's the test: would anything the parent sees *after* a week of real use be a surprise, given what preview mode showed them on day one? If yes, preview mode is incomplete — extend it until the answer is no.
+
+This also resolves the latent tension in §5 (the volunteer channel must stay low-friction and undemanding for parents who never engage it): preview mode is where a parent *forms* their trust in the system, once, up front — which is exactly what makes it safe for the ongoing relationship to ask so little of them afterward.
+
+---
+
+## 7. Why this passes the tests
 
 - **Menu vs. diner (Hard Line 12 / Epigenome 020):** every control surface in §4 writes to "what's offered," none to "what's already hers." The structural absence of the second kind of control is what makes this safe in any parent's hands, not a promise about any parent's intentions.
 - **Absence shown as clearly as presence (Principle 12):** not a feature — a consequence of the Map's four-state design (§2). There is no way to render the grid without rendering all four states from the same record.
@@ -80,14 +97,16 @@ It surfaces instead as occasional, optional, non-nagging prompts at natural mome
 
 ---
 
-## 7. Open questions for the architect
+## 8. Questions raised, and how they closed
 
-~~1. **Naming**~~ — **Settled (2026-06-08):** keep "the Map" / "the Trajectory" as working names; revisit only if a better fit surfaces during the build. No further action.
+All four questions this doc originally raised are now settled by the architect (2026-06-08):
 
-~~2. **Numeric confidence, exposed or not**~~ — **Settled (2026-06-08), genotype-level:** *"Never show numbered scores for the parent or anywhere in the device."* Hard Line 6 broadened accordingly (Epigenome 022) — banded language only, on every surface, for everyone, no exceptions and no drill-down. §6 above updated to state this as the rule, not a leaning.
+1. ~~**Naming**~~ — keep "the Map" / "the Trajectory"; revisit only if something better surfaces during the build.
+2. ~~**Numeric confidence, exposed or not**~~ — **genotype-level:** *"Never show numbered scores for the parent or anywhere in the device."* Hard Line 6 broadened (Epigenome 022) — banded language only, every surface, no exceptions, no drill-down. See §7.
+3. ~~**Counter-balance discoverability**~~ — *"keep it a glass box. nothing hidden from the parent. permanent control."* Settled in §4: always-visible, no contextual surfacing, no inference about the parent required (Epigenome 023).
+4. ~~**Build order**~~ — *"yes for transparency... they should be able to view and test the whole system before deciding to let the child play with it."* This named a real product requirement beyond "build a prototype": a **Parent Preview / Test-Drive Mode**, specified in §6 (Epigenome 023).
 
-3. **Counter-balance discoverability** — how prominent should this control be? Too prominent risks framing parenting as a dial-turning exercise (anti-pattern for the "aliveness, not a system" feel); too hidden risks the one tool that makes Principle 12's promise *usable* going unused. Possibly: surfaced contextually (the suite notices a skew and *offers* the tool) rather than sitting as a permanent control — though "the suite notices a skew" is itself a design commitment worth scrutiny (it's analysis *of the parent's choices*, which needs its own care not to feel surveilled — logged as an unconfirmed hypothesis in Epigenome 021).
-4. **Build order** — does this become a Mission-8-adjacent prototype (a clickable mock, like the inner-life and memory simulators) before the awakening-choreography thread, or does it wait for real `learning_log` data to design against?
+No open questions remain on this thread. Future questions belong in `10_PHENOTYPE.md §3` as they arise (e.g., during prototype build or when the awakening-choreography thread surfaces overlap with this one — the preview mode in §6 will need to walk the awakening sequence too, once that spec exists).
 
 ---
 

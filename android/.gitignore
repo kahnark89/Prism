@@ -1,0 +1,12 @@
+# Gradle build cache and wrapper state
+.gradle/
+build/
+*/build/
+
+# Kotlin error logs
+.kotlin/
+
+# Android Studio / IntelliJ project files
+*.iml
+.idea/
+local.properties

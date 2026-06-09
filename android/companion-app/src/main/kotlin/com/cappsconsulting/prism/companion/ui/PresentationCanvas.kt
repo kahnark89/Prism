@@ -2,6 +2,7 @@ package com.cappsconsulting.prism.companion.ui
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -34,7 +35,8 @@ import kotlin.math.sqrt
  */
 private fun PresentationState.toColor(): Color {
     val hsl = floatArrayOf(hue.toFloat(), (saturation / 100.0).toFloat(), (lightness / 100.0).toFloat())
-    return Color(android.graphics.Color.HSLToColor(hsl))
+    val argb = androidx.core.graphics.ColorUtils.HSLToColor(hsl)
+    return Color(argb)
 }
 
 /**

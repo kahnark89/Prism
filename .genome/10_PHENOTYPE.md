@@ -1,7 +1,7 @@
 # 10_PHENOTYPE — Prism (live state)
 
 > High-churn file. Any client updates this freely. This is "what we're doing right now."
-> **Last touched:** 2026-06-08 by Claude Code (remote) · MAJOR PIVOT landed (Epigenome 024): Prism is now two linked Android apps, not bespoke hardware. Genotype rewritten + signed off live by the architect; Doc 3.0 (Platform Architecture) drafted; Awakening choreography (Doc 2.3) underway against the new platform.
+> **Last touched:** 2026-06-09 by Claude Code (remote) · All Companion HAL Android implementations, RecognitionEngine, Companion pairing UI, CompanionViewModel, and MainActivity wiring are now complete. Both apps are fully wired and ready for a first real session.
 > **Pending ratification:** 2 unconfirmed deeper-why hypotheses in Epigenome 016, 017 (018 ratified into 019). Confirm/edit/drop when convenient.
 
 ---
@@ -46,7 +46,7 @@
   3. ✅ Orchestrator split + pairing/sync — `:sync` module (ECDH pairing, `LinkedDeviceRegistry`, `EnvelopeCipher`, `SyncTransport`, `SessionSummary`/`MenuState` payloads; 79 tests passing on JVM); `CompanionOrchestrator` in `:companion-app`
   4. ✅ `dashboard/` replaced by native Parent Suite app — `:parent-suite-app` complete: `ConceptRecord`/`ConceptTileState`/`Pacing`/`ChildProfile` data layer; `ParentSuiteViewModel`; `MapScreen` (2-col grid, all 4 tile states, counter-balance always visible); `TrajectoryScreen` (chronological, banded text only); `PairingScreen` (QR generation via BarcodeEncoder, TTL countdown, linked-devices list); `SettingsScreen`; `PreviewModeScreen` (honest "awaiting Companion" state — Companion pairing module not yet written); `ParentNavHost` (bottom-nav + nested destinations); `MainActivity`; `PrismParentApp`
 
-  **What remains named rather than built:** Companion HAL's Android implementations (`hal/android/`) — CameraX binding, AudioRecord binding, TextToSpeech binding, haptic waveforms — and `RecognitionEngine` (biometric gate, no honest placeholder). Companion pairing UI (`companion/pairing/`) is an empty placeholder directory — needed for Preview Mode to connect end-to-end. These are the last pieces before a first real session.
+  **All four replatform items are now complete** — including the Companion's Android HAL (`CameraXSource`, `AndroidMicrophone`, `AndroidSpeaker`, `AndroidHaptics`), `NotEnrolledRecognitionEngine` (honest pre-enrollment state; biometric gate not faked), Companion pairing UI (`CompanionPairingScreen` + `CompanionPairingViewModel` + `AndroidKeyStorage`), `CompanionViewModel` (full orchestrator wiring), and `MainActivity` wired to `CompanionScreen` via the ViewModel. Both apps are ready for a first real session.
 
 ## §4 Next actions
 1. Architect directs the next design thread (parent-suite UX is the lead candidate).

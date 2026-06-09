@@ -39,6 +39,8 @@ import com.cappsconsulting.prism.companion.ui.PresentationAccentBorder
 import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 
+// CameraViewfinder used when no orchestrator-wired PreviewView is available (standalone mode)
+
 /**
  * Mechanical mode, painted exactly as Doc 2.3 §3 Beat 1 describes the screen
  * its awakening interrupts: "the glass-box camera view, labels, confidence
@@ -64,11 +66,20 @@ import kotlinx.coroutines.suspendCancellableCoroutine
  * kdoc — landing on [onTapToLook] exactly where `register_button_callback`
  * once registered its handler.
  */
+/**
+ * [cameraPreviewView]: when the full orchestrator is wired up, [CameraXSource] owns
+ * the camera binding and exposes its [PreviewView] here — `AndroidView` mounts it
+ * directly. When null (standalone, no orchestrator), [CameraViewfinder] falls back
+ * to its own [ProcessCameraProvider] binding for the preview. The two paths diverge
+ * only in how the viewfinder is sourced; everything above it (tap gesture, accent
+ * border, glass-box overlay) is identical in both cases.
+ */
 @Composable
 fun MechanicalPresentationScreen(
     presentation: PresentationState,
     lastReadout: VisionReadout?,
     onTapToLook: () -> Unit,
+    cameraPreviewView: PreviewView? = null,
     modifier: Modifier = Modifier,
 ) {
     val currentOnTapToLook by rememberUpdatedState(onTapToLook)
@@ -78,7 +89,11 @@ fun MechanicalPresentationScreen(
             .fillMaxSize()
             .pointerInput(Unit) { detectTapGestures(onTap = { currentOnTapToLook() }) },
     ) {
-        CameraViewfinder(modifier = Modifier.fillMaxSize())
+        if (cameraPreviewView != null) {
+            AndroidView(factory = { cameraPreviewView }, modifier = Modifier.fillMaxSize())
+        } else {
+            CameraViewfinder(modifier = Modifier.fillMaxSize())
+        }
         PresentationAccentBorder(state = presentation, modifier = Modifier.fillMaxSize())
         GlassBoxOverlay(readout = lastReadout, modifier = Modifier.align(Alignment.TopStart))
     }

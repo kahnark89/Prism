@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Parent Suite — shield / enclosure shape -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,18 C54,18 82,28 82,50 C82,68 68,82 54,88 C40,82 26,68 26,50 C26,28 54,18 54,18 Z" />
+</vector>

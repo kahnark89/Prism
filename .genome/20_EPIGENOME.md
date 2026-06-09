@@ -162,3 +162,32 @@
 - This entry itself is the durable record of the runtime call — the foundational decision every future replatform session will build on.
 
 **Avoids:** Starting ~50 files of replatform work *before* the one decision that determines how every file gets rewritten was settled — which would have meant either guessing (and possibly redoing all of it) or stalling mid-effort to ask. Also avoids the inverse failure: leaving a now-answerable foundational question parked as an "open question" when the architect was right here to answer it.
+
+### 026 · 2026-06-09 · Claude Code (remote) · REPLATFORM COMPLETE: Parent Suite app (`:parent-suite-app`) built — all four replatform items done
+**Cause:** User: "now begin the parent suite app." Items 1–3 of the replatform queued in Phenotype §3 had already landed (HAL interfaces, Compose UI + awakening choreography, `:sync` module + `CompanionOrchestrator`). Item 4 — "replace `dashboard/` with native Parent Suite app per Doc 2.2" — was the remaining open item.
+
+**Reasoning:** 16 files written for `:parent-suite-app` (package `com.cappsconsulting.prism.parentsuite`). Key structural decisions in this pass:
+
+1. **`GroundingStatus` from `:engine` used directly** — not redefined as a new `GroundingBand` enum. `com.cappsconsulting.prism.engine.grounding.GroundingStatus` with its wire values (`"exploring"`, `"getting_it"`, `"owns_it"`) is the shared truth. Redefining it in the parent package would have created a desync risk between wire values and display labels.
+
+2. **Hard Line 6 structurally enforced in every parent-facing surface** — `GroundingStatus` renders as banded plain-language text only throughout `MapScreen` and `TrajectoryScreen` ("exploring", "getting it", "owns it"). No `LinearProgressIndicator`, no percentage, no decimal appears anywhere in the Parent Suite. This is the deliberate opposite of the Companion's `GlassBoxOverlay` which shows numeric confidence to teach the child how the fast brain *sees*. The parent app's Hard Line 6 enforcement is not a style choice — it's the same constraint the architect broadened in Epigenome 022: "Never show numbered scores for the parent or anywhere in the device."
+
+3. **Counter-balance always visible unconditionally in `ConceptDetailSheet`** — not behind "Advanced" or surfaced only when non-zero. Doc 2.2 §4 designates it a "permanent glass-box control." Also indicated on active concept tiles when weight > 0 (small Balance icon) so the parent can see at a glance which concepts carry extra weight without opening each sheet.
+
+4. **All four `ConceptTileState`s rendered equally** — `ACTIVE` (ElevatedCard), `DORMANT` (Card, 55% alpha), `ABSENT_BY_PARENT` (Card, errorContainer), `NOT_YET_REACHED` (OutlinedCard). "Absence shown as clearly as presence" (Principle 12) — the off-limits and not-yet-reached tiles are not hidden or pushed to a secondary screen.
+
+5. **No CAMERA permission in Parent Suite** — QR code is *displayed* here and scanned by the Companion. `BarcodeEncoder().encodeBitmap(json, BarcodeFormat.QR_CODE, 512, 512)` runs on `Dispatchers.Default` in `viewModelScope` when the parent taps "Generate QR code." The Companion's QR scanning is in the empty `companion/pairing/` placeholder directory — not yet written.
+
+6. **`PreviewModeScreen` is honest about what it awaits** — the Companion's pairing UI doesn't exist yet (`companion/pairing/` is an empty directory). Preview mode structurally requires a connected Companion; the screen names that dependency plainly ("awaiting a paired Companion") rather than showing a mock or simulated preview. Same honesty commitment as `AwaitingCompanionPlaceholder` on the Companion side.
+
+7. **Seed data in `ParentSuiteViewModel.seedConcepts()` / `seedSessions()`** — 6 concepts illustrate all 4 tile states and all 3 grounding bands; 3 sessions illustrate new-exposure, revisit, and steady-state cases. Labeled as demo records in the kdoc. Purpose: Map and Trajectory are non-empty and reviewable on first launch, before any real sessions sync.
+
+8. **Light theme for Parent Suite (`PrismParentTheme`)** — Material3 `lightColorScheme()` defaults, no customization. Deliberate structural contrast with `PrismCompanionTheme`'s always-dark scheme. The parent is looking at a management tool, not an immersive display.
+
+9. **`collectAsState()` throughout** — `lifecycle-runtime-compose` is not declared in `libs.versions.toml` (only `lifecycle-runtime-ktx` and `lifecycle-viewmodel-compose` are). `collectAsStateWithLifecycle()` is not available without it.
+
+10. **No DI framework** — `ParentSuiteViewModel` obtained via `viewModels()` in `MainActivity`, passed directly to `ParentNavHost` and composables as a parameter. Same pattern as the Companion module.
+
+**Effect/Commits:** 16 files created in `:parent-suite-app` — `build.gradle.kts`, `AndroidManifest.xml`, `res/values/{strings,themes}.xml`, `data/{ConceptRecord,ChildProfile}.kt`, `ui/theme/Theme.kt`, `viewmodel/ParentSuiteViewModel.kt`, `ui/map/MapScreen.kt`, `ui/trajectory/TrajectoryScreen.kt`, `ui/pairing/PairingScreen.kt`, `ui/settings/SettingsScreen.kt`, `ui/preview/PreviewModeScreen.kt`, `ui/ParentNavHost.kt`, `MainActivity.kt`, `PrismParentApp.kt`. `10_PHENOTYPE.md §3` replatform item updated: all four items marked complete.
+
+**Avoids:** Redefining `GroundingStatus` (would have desync'd wire values from display labels). Showing numeric confidence anywhere in the parent app (Hard Line 6 violation). Hiding the counter-balance control (Epigenome 023 contract). Hiding ABSENT_BY_PARENT/NOT_YET_REACHED tiles from the Map (Principle 12). Placing CAMERA permission in the Parent Suite (wrong side of the pairing handshake). Showing a fake Preview Mode instead of naming what's actually missing (honesty contract established in Companion's `AwaitingCompanionPlaceholder`).

@@ -13,7 +13,7 @@ import com.cappsconsulting.prism.companion.vision.VisionClassifier
 import com.cappsconsulting.prism.engine.config.PrismConfig
 import com.cappsconsulting.prism.engine.grounding.GroundingAccumulator
 import com.cappsconsulting.prism.engine.grounding.GroundingRecordSnapshot
-import com.cappsconsulting.prism.engine.innerlife.CodebookEntrySnapshot
+import com.cappsconsulting.prism.engine.memory.CodebookEntrySnapshot
 import com.cappsconsulting.prism.engine.innerlife.InnerLifeEngine
 import com.cappsconsulting.prism.engine.innerlife.InnerLifeSnapshot
 import com.cappsconsulting.prism.engine.innerlife.InnerLifeState

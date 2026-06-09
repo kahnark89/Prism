@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Light base theme for the Parent Suite — a management tool, not an immersive
+      display. enableEdgeToEdge() in MainActivity overrides status/nav bar colours
+      once Compose takes over; this style exists only to give the activity window a
+      white starting colour so there's no flash of system chrome before Compose renders.
+      The deliberate structural opposite of Theme.Prism.Companion, which is always black.
+    -->
+    <style name="Theme.Prism.Parent" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:statusBarColor">@android:color/white</item>
+        <item name="android:navigationBarColor">@android:color/white</item>
+    </style>
+</resources>

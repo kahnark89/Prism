@@ -1,0 +1,60 @@
+name: Build APKs
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - main
+      - 'claude/**'
+    paths:
+      - 'android/**'
+      - '.github/workflows/build-apks.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ hashFiles('android/**/*.gradle*', 'android/**/libs.versions.toml') }}
+          restore-keys: gradle-
+
+      - name: Make gradlew executable
+        working-directory: android
+        run: chmod +x gradlew
+
+      - name: Build Companion APK
+        working-directory: android
+        run: ./gradlew :companion-app:assembleDebug --no-daemon
+
+      - name: Build Parent Suite APK
+        working-directory: android
+        run: ./gradlew :parent-suite-app:assembleDebug --no-daemon
+
+      - name: Upload Companion APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: companion-app-debug
+          path: android/companion-app/build/outputs/apk/debug/companion-app-debug.apk
+          retention-days: 90
+
+      - name: Upload Parent Suite APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: parent-suite-app-debug
+          path: android/parent-suite-app/build/outputs/apk/debug/parent-suite-app-debug.apk
+          retention-days: 90

@@ -1,6 +1,7 @@
 package com.cappsconsulting.prism.companion.ui
 
 import android.util.Log
+import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -40,7 +41,12 @@ private const val TAG = "CompanionScreen"
  * original's single-threaded asyncio loop never had a chance to introduce.
  */
 @Composable
-fun CompanionScreen(orchestrator: CompanionOrchestrator, modifier: Modifier = Modifier) {
+fun CompanionScreen(
+    orchestrator: CompanionOrchestrator,
+    cameraPreviewView: PreviewView? = null,
+    onAdminGesture: () -> Unit = {},
+    modifier: Modifier = Modifier,
+) {
     val awakeningState by orchestrator.awakeningState.collectAsState()
     val presentation by orchestrator.presentation.collectAsState()
     val lastReadout by orchestrator.lastReadout.collectAsState()
@@ -63,6 +69,8 @@ fun CompanionScreen(orchestrator: CompanionOrchestrator, modifier: Modifier = Mo
             presentation = presentation,
             lastReadout = lastReadout,
             onTapToLook = onTapToLook,
+            onAdminGesture = onAdminGesture,
+            cameraPreviewView = cameraPreviewView,
             modifier = modifier,
         )
 

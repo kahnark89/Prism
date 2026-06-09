@@ -162,3 +162,105 @@
 - This entry itself is the durable record of the runtime call — the foundational decision every future replatform session will build on.
 
 **Avoids:** Starting ~50 files of replatform work *before* the one decision that determines how every file gets rewritten was settled — which would have meant either guessing (and possibly redoing all of it) or stalling mid-effort to ask. Also avoids the inverse failure: leaving a now-answerable foundational question parked as an "open question" when the architect was right here to answer it.
+
+### 026 · 2026-06-09 · Claude Code (remote) · REPLATFORM COMPLETE: Parent Suite app (`:parent-suite-app`) built — all four replatform items done
+**Cause:** User: "now begin the parent suite app." Items 1–3 of the replatform queued in Phenotype §3 had already landed (HAL interfaces, Compose UI + awakening choreography, `:sync` module + `CompanionOrchestrator`). Item 4 — "replace `dashboard/` with native Parent Suite app per Doc 2.2" — was the remaining open item.
+
+**Reasoning:** 16 files written for `:parent-suite-app` (package `com.cappsconsulting.prism.parentsuite`). Key structural decisions in this pass:
+
+1. **`GroundingStatus` from `:engine` used directly** — not redefined as a new `GroundingBand` enum. `com.cappsconsulting.prism.engine.grounding.GroundingStatus` with its wire values (`"exploring"`, `"getting_it"`, `"owns_it"`) is the shared truth. Redefining it in the parent package would have created a desync risk between wire values and display labels.
+
+2. **Hard Line 6 structurally enforced in every parent-facing surface** — `GroundingStatus` renders as banded plain-language text only throughout `MapScreen` and `TrajectoryScreen` ("exploring", "getting it", "owns it"). No `LinearProgressIndicator`, no percentage, no decimal appears anywhere in the Parent Suite. This is the deliberate opposite of the Companion's `GlassBoxOverlay` which shows numeric confidence to teach the child how the fast brain *sees*. The parent app's Hard Line 6 enforcement is not a style choice — it's the same constraint the architect broadened in Epigenome 022: "Never show numbered scores for the parent or anywhere in the device."
+
+3. **Counter-balance always visible unconditionally in `ConceptDetailSheet`** — not behind "Advanced" or surfaced only when non-zero. Doc 2.2 §4 designates it a "permanent glass-box control." Also indicated on active concept tiles when weight > 0 (small Balance icon) so the parent can see at a glance which concepts carry extra weight without opening each sheet.
+
+4. **All four `ConceptTileState`s rendered equally** — `ACTIVE` (ElevatedCard), `DORMANT` (Card, 55% alpha), `ABSENT_BY_PARENT` (Card, errorContainer), `NOT_YET_REACHED` (OutlinedCard). "Absence shown as clearly as presence" (Principle 12) — the off-limits and not-yet-reached tiles are not hidden or pushed to a secondary screen.
+
+5. **No CAMERA permission in Parent Suite** — QR code is *displayed* here and scanned by the Companion. `BarcodeEncoder().encodeBitmap(json, BarcodeFormat.QR_CODE, 512, 512)` runs on `Dispatchers.Default` in `viewModelScope` when the parent taps "Generate QR code." The Companion's QR scanning is in the empty `companion/pairing/` placeholder directory — not yet written.
+
+6. **`PreviewModeScreen` is honest about what it awaits** — the Companion's pairing UI doesn't exist yet (`companion/pairing/` is an empty directory). Preview mode structurally requires a connected Companion; the screen names that dependency plainly ("awaiting a paired Companion") rather than showing a mock or simulated preview. Same honesty commitment as `AwaitingCompanionPlaceholder` on the Companion side.
+
+7. **Seed data in `ParentSuiteViewModel.seedConcepts()` / `seedSessions()`** — 6 concepts illustrate all 4 tile states and all 3 grounding bands; 3 sessions illustrate new-exposure, revisit, and steady-state cases. Labeled as demo records in the kdoc. Purpose: Map and Trajectory are non-empty and reviewable on first launch, before any real sessions sync.
+
+8. **Light theme for Parent Suite (`PrismParentTheme`)** — Material3 `lightColorScheme()` defaults, no customization. Deliberate structural contrast with `PrismCompanionTheme`'s always-dark scheme. The parent is looking at a management tool, not an immersive display.
+
+9. **`collectAsState()` throughout** — `lifecycle-runtime-compose` is not declared in `libs.versions.toml` (only `lifecycle-runtime-ktx` and `lifecycle-viewmodel-compose` are). `collectAsStateWithLifecycle()` is not available without it.
+
+10. **No DI framework** — `ParentSuiteViewModel` obtained via `viewModels()` in `MainActivity`, passed directly to `ParentNavHost` and composables as a parameter. Same pattern as the Companion module.
+
+**Effect/Commits:** 16 files created in `:parent-suite-app` — `build.gradle.kts`, `AndroidManifest.xml`, `res/values/{strings,themes}.xml`, `data/{ConceptRecord,ChildProfile}.kt`, `ui/theme/Theme.kt`, `viewmodel/ParentSuiteViewModel.kt`, `ui/map/MapScreen.kt`, `ui/trajectory/TrajectoryScreen.kt`, `ui/pairing/PairingScreen.kt`, `ui/settings/SettingsScreen.kt`, `ui/preview/PreviewModeScreen.kt`, `ui/ParentNavHost.kt`, `MainActivity.kt`, `PrismParentApp.kt`. `10_PHENOTYPE.md §3` replatform item updated: all four items marked complete.
+
+**Avoids:** Redefining `GroundingStatus` (would have desync'd wire values from display labels). Showing numeric confidence anywhere in the parent app (Hard Line 6 violation). Hiding the counter-balance control (Epigenome 023 contract). Hiding ABSENT_BY_PARENT/NOT_YET_REACHED tiles from the Map (Principle 12). Placing CAMERA permission in the Parent Suite (wrong side of the pairing handshake). Showing a fake Preview Mode instead of naming what's actually missing (honesty contract established in Companion's `AwaitingCompanionPlaceholder`).
+
+### 027 · 2026-06-09 · Claude Code (remote) · COMPANION APP COMPLETE: all remaining pieces wired — HAL Android implementations, RecognitionEngine, pairing UI, ViewModel, MainActivity
+**Cause:** User: "complete each item that is left. push to github at regular intervals so i will have everything saved if i hit session limits." Phenotype §3 named four remaining pieces: Companion HAL Android implementations (`hal/android/`), `RecognitionEngine` (biometric gate), Companion pairing UI (`companion/pairing/`), and wiring everything into a running `CompanionViewModel` + updated `MainActivity`.
+
+**Reasoning:** Key structural decisions in this pass:
+
+1. **`CameraXSource` owns both `Preview` + `ImageAnalysis` in one `bindToLifecycle` call** — `ProcessCameraProvider.bindToLifecycle()` *replaces* existing use-case bindings for the same LifecycleOwner+CameraSelector rather than adding to them. Binding `Preview` for the viewfinder and `ImageAnalysis` for `captureFrame()` separately would mean each call silently unbinds the other. Solution: `CameraXSource.start()` binds both in one call and exposes `previewView: PreviewView` for `MechanicalPresentationScreen` to mount. `MechanicalPresentationScreen` accepts `cameraPreviewView: PreviewView? = null` — uses the orchestrator-owned view when available, falls back to its own `ProcessCameraProvider` binding in standalone/test mode. `CompanionScreen` threads the nullable view from `CompanionViewModel.cameraPreviewView` through to `MechanicalPresentationScreen`.
+
+2. **Pull-based camera frame delivery** — `Channel(Channel.RENDEZVOUS)`: `captureFrame()` blocks until the next frame; the `ImageAnalysis` analyzer uses `trySend()` (drops frames when no consumer is waiting). `STRATEGY_KEEP_ONLY_LATEST` ensures only the most recent unprocessed frame queues. This matches the orchestrator's tap-triggered pattern: the channel is essentially zero-length — `captureFrame()` and the next analyzer callback meet directly.
+
+3. **`AndroidMicrophone` silence detection** — RMS amplitude per 50ms chunk; `SILENCE_THRESHOLD_RMS = 400`; 8 consecutive silent chunks (~400ms) ends the recording after a minimum 500ms of audio (no false-stop on brief pauses at the start). Returns raw PCM `ByteArray` for the orchestrator's pipeline.
+
+4. **`AndroidSpeaker` async TTS init** — `CompletableDeferred<Unit>` defers `speak()` calls until TTS is ready via `OnInitListener`. `speak()` suspends until utterance completes via `UtteranceProgressListener`. `_isSpeaking` `MutableStateFlow` tracks live state for callers that need it.
+
+5. **`AndroidHaptics` two-tier composition** — API 30+ (`Build.VERSION_CODES.R`) uses `VibrationEffect.startComposition()` with named primitives (`PRIMITIVE_TICK`, `PRIMITIVE_SLOW_RISE`, `PRIMITIVE_QUICK_FALL`, `PRIMITIVE_THUD`) for Doc 2.3's haptic gestures. API 28-29 fallback uses `createWaveform(timings, amplitudes, -1)` approximations. `supportsComposition` exposed on `HapticOutput` for callers that need to branch.
+
+6. **`AndroidKeyStorage` uses `SharedPreferences` + `Base64`, not Android Keystore** — Android Keystore hardware-backed keys are non-extractable; `EnvelopeCipher` needs raw `ByteArray`. Using `WrappedKeyEntry` or a cipher-inside-keystore pattern is the production upgrade path, documented in the kdoc. For this first build: `SharedPreferences` + `android.util.Base64` gives a working `KeyStorage` implementation without blocking the build on a Keystore integration that isn't critical to validate the core flow.
+
+7. **`NotEnrolledRecognitionEngine` is not a mock** — `isEnrolled()` returns `false`; the orchestrator's check `if (!awakening.isAwakened && recognition.isEnrolled())` means the recognition path is never entered. `recognize()` throws if somehow called (unreachable in normal operation). `enroll()` returns `false`. This is the pre-enrollment state made concrete — the same honesty commitment as `AwaitingCompanionPlaceholder` and the Parent Suite's `PreviewModeScreen`: no fake biometric confirmation is ever an honest placeholder for a biometric safety gate.
+
+8. **`CompanionViewModel : AndroidViewModel`** — wires the full orchestrator graph. `initialize(lifecycleOwner: LifecycleOwner)` is synchronous up to the internal `viewModelScope.launch`, so `_orchestrator` is non-null immediately after it returns, before `setContent` runs. Re-entrancy guard (`if (_orchestrator != null) return`) makes activity-restart calls no-ops.
+
+9. **`llmClient = null` in `PerspectiveEngine`** — `PerspectiveEngine` accepts nullable `LlmClient?` and uses offline fallback templates when null. No OkHttp in `libs.versions.toml`; `AnthropicLlmClient` (HTTP) is follow-on work. Named honestly in `CompanionViewModel`'s kdoc.
+
+10. **`AwaitingCompanionPlaceholder` removed from `MainActivity`** — the placeholder existed only until the orchestrator pieces landed; those pieces have landed. `MainActivity` now owns a `CompanionViewModel`, calls `viewModel.initialize(this)` before `setContent`, and renders `CompanionScreen(viewModel.orchestrator!!, cameraPreviewView = viewModel.cameraPreviewView)` — the `!!` is safe because `initialize()` sets `_orchestrator` synchronously before the launch.
+
+**Effect/Commits:** 8 files created/updated in `:companion-app` — `hal/android/{CameraXSource,AndroidMicrophone,AndroidSpeaker,AndroidHaptics}.kt`, `recognition/NotEnrolledRecognitionEngine.kt`, `pairing/{CompanionPairingViewModel,CompanionPairingScreen,AndroidKeyStorage}.kt`, `orchestrator/CompanionViewModel.kt`, `ui/CompanionScreen.kt` (threaded `cameraPreviewView`), `ui/mechanical/MechanicalPresentationScreen.kt` (accepts `cameraPreviewView: PreviewView?`), `MainActivity.kt` (orchestrator wired, placeholder removed). Both apps are now complete and ready for a first real session.
+
+**Avoids:** Binding `Preview` and `ImageAnalysis` in separate `bindToLifecycle` calls (silently unbinds one when the other is added). Faking biometric recognition (`NotEnrolledRecognitionEngine` — honesty contract). Blocking the build on Android Keystore raw-byte incompatibility (SharedPreferences bridge, upgrade path documented). Leaving `llmClient` as an unresolved open question (null = offline templates, named honestly). Leaving `AwaitingCompanionPlaceholder` after the pieces it was waiting for arrived.
+
+### 028 · 2026-06-09 · Claude Code (remote) · FULL STACK COMPLETE: TFLite classifier, ML Kit recognition, Anthropic LLM client, enrollment UX, navigation
+**Cause:** User: "finish the remaining work." Epigenome 027 had named three remaining pieces: `TfliteVisionClassifier`, enrollment UX for `RecognitionEngine`, `AnthropicLlmClient`. Three additional pieces emerged as necessary once those were scoped: the Room data layer for face templates, the navigation host to connect enrollment/pairing/settings, and an API key entry screen.
+
+**Reasoning:** Key structural decisions in this pass:
+
+1. **`CameraFrame.toBitmap()` as a shared extension** in `hal/CameraFrameExtensions.kt` — both `TfliteVisionClassifier` and `MlKitRecognitionEngine` need `CameraFrame → Bitmap`; putting it in the `hal` package (where `CameraFrame` lives) avoids duplicating a 10-line function and names it once.
+
+2. **`TfliteVisionClassifier` graceful fallback** — `ImageClassifier.createFromFileAndOptions()` throws `IOException` when `mobilenet_v1.tflite` is absent from assets. Catching it in the constructor (`runCatching { }`) and setting `classifier = null` means `infer()` delegates to `MockVisionClassifier` automatically — the documented shipping default until model assets land, not a silent failure.
+
+3. **`MlKitRecognitionEngine` pixel-similarity baseline** — ML Kit Face Detection (`FaceDetection.getClient()`) gives bounding boxes but NOT face embeddings. The honest baseline: crop the face region to 64×64 grayscale, normalize to zero-mean/unit-variance, store the float array as `ByteArray` in Room; recognize via cosine similarity ≥ 0.75. Documented upgrade path: swap the pixel-similarity template for a TFLite FaceNet/MobileNetV2 embedding — same Room seam, same DAO. ML Kit `Task<T>` bridged to coroutines via `suspendCancellableCoroutine` (no `kotlinx-coroutines-play-services` in the catalog).
+
+4. **`RecognitionDatabase` separate from main session DB** — named constraint from `RecognitionEngine`'s kdoc: "separate recognition database (never in the main db)." Enforced structurally by using a distinct `RoomDatabase` subclass (`RecognitionDatabase`) and a distinct file name (`recognition.db`).
+
+5. **`MlKitRecognitionEngine.isEnrolled()` in-memory cache** — the interface is non-suspend; the Room `count()` query is suspend. Caching the enrolled state as `@Volatile var enrolledCache: Boolean` initialized asynchronously in `init {}` via `bgScope.launch` avoids both `runBlocking` on the main thread and a non-suspend Room query. Default is `false` (not enrolled) until the async query resolves — conservative.
+
+6. **`deleteTemplates()` is non-suspend** — fires `bgScope.launch { dao.deleteAll() }` (fire-and-forget on IO dispatcher) and sets `enrolledCache = false` synchronously. The parent-callable contract doesn't require awaiting the delete; the cache is the authoritative state for the session.
+
+7. **`AnthropicLlmClient` uses `HttpURLConnection`** — no OkHttp/Ktor in the catalog. `HttpURLConnection` is sufficient for one POST per tap-to-look. Runs on `Dispatchers.IO`. JSON serialized/deserialized via `kotlinx.serialization.json` (already in companion's dependencies). If no API key is set, throws `IOException` → `PerspectiveEngine` catches and falls back to offline templates.
+
+8. **Admin overlay via long-press on `MechanicalPresentationScreen`** — `detectTapGestures(onTap = ..., onLongPress = ...)` in `MechanicalPresentationScreen`. `onAdminGesture: (() -> Unit)?` is null by default so existing standalone uses are unaffected. `CompanionScreen` threads it from `CompanionNavHost`'s `navigate("admin")` call. Long-press threshold is long enough that exploratory child tapping won't trigger it.
+
+9. **`CompanionNavHost` with `popUpTo("admin") { inclusive = true }`** — navigating from the admin menu to enrollment/pairing/settings pops the admin menu off the back stack so Back from those screens returns directly to the session screen, not the menu. Clean UX: one tap to get to the session, not two.
+
+10. **`CompanionViewModel` updated to wire all real implementations** — `TfliteVisionClassifier`, `MlKitRecognitionEngine`, `AnthropicLlmClient`. Exposes `childName`, `isEnrolled()`, `enrollChild(frameCount)`, and `apiKeyStore` for the UI layer. `enrollChild()` captures frames from the running `CameraXSource` and passes them to `MlKitRecognitionEngine.enroll()`.
+
+**Effect/Commits:** 12 files created/updated:
+- `hal/CameraFrameExtensions.kt` — shared `toBitmap()` extension
+- `data/{FaceTemplateEntity,FaceTemplateDao,RecognitionDatabase}.kt` — Room schema in `recognition.db`
+- `recognition/MlKitRecognitionEngine.kt` — face detection + template matching
+- `vision/TfliteVisionClassifier.kt` — TFLite with fallback
+- `llm/{ApiKeyStore,AnthropicLlmClient}.kt` — API key store + HTTP LLM client
+- `ui/enrollment/CompanionEnrollmentScreen.kt` — guided enrollment UI
+- `ui/settings/ApiKeyScreen.kt` — API key entry
+- `ui/CompanionNavHost.kt` — navigation host + admin menu
+- `ui/mechanical/MechanicalPresentationScreen.kt` — added `onAdminGesture` long-press
+- `ui/CompanionScreen.kt` — threaded `onAdminGesture`
+- `orchestrator/CompanionViewModel.kt` — wired all real implementations
+- `MainActivity.kt` — uses `CompanionNavHost`; added `pairingViewModel`
+- `companion-app/build.gradle.kts` — added `navigation-compose`
+
+**What remains before a fully production-ready session:** bundle `mobilenet_v1.tflite` in assets (activates real TFLite inference), enter API key via admin overlay (activates smart-brain path), run enrollment on device (activates awakening).
+
+**Avoids:** Pixel-based recognition without documenting its limitations (pixel-similarity + upgrade path both named in kdoc). Blocking the build on a missing model asset (`TfliteVisionClassifier` catches the exception and falls back). Navigating from the admin menu without clearing it from the back stack (`popUpTo` pattern). Requiring `kotlinx-coroutines-play-services` for ML Kit Task bridging (single `suspendCancellableCoroutine` extension handles it). Leaving the pairing screen unreachable from the Companion app (admin menu → "Pair with Parent Suite").

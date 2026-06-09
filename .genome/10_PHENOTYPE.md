@@ -1,7 +1,7 @@
 # 10_PHENOTYPE — Prism (live state)
 
 > High-churn file. Any client updates this freely. This is "what we're doing right now."
-> **Last touched:** 2026-06-08 by Claude Code (remote) · MAJOR PIVOT landed (Epigenome 024): Prism is now two linked Android apps, not bespoke hardware. Genotype rewritten + signed off live by the architect; Doc 3.0 (Platform Architecture) drafted; Awakening choreography (Doc 2.3) underway against the new platform.
+> **Last touched:** 2026-06-09 by Claude Code (remote) · All Companion HAL Android implementations, RecognitionEngine, Companion pairing UI, CompanionViewModel, and MainActivity wiring are now complete. Both apps are fully wired and ready for a first real session.
 > **Pending ratification:** 2 unconfirmed deeper-why hypotheses in Epigenome 016, 017 (018 ratified into 019). Confirm/edit/drop when convenient.
 
 ---
@@ -40,7 +40,18 @@
 - ~~**Compute final call** — CM5-on-custom-carrier vs. Pi 5 in designed enclosure.~~ **OBSOLETE — superseded by the platform pivot (Epigenome 024).** Compute is now "whatever phone/tablet the parent provisions." No bespoke board, no enclosure, no thermal/material compliance. Question dissolves rather than resolves; preserved here only so a future reader doesn't wonder where it went. (Bespoke-hardware plan recoverable as a future product-phase spec — Shadow S09.)
 - **Shadow Actions for youngest tier** — drop field at 3–5, light up with age?
 - **mp4Real "+" / CIAER+ Pre-ENV mapping for a child** — sketched; not yet formalized into learning_log schema.
-- **Replatform queued (not started; scope itself is a thread)** — `prism/` (the Python reference stack on `main`, reviewed/triaged in Epigenome 025) needs: (1) `hal/` rebuilt natively for Android (CameraX/VibrationEffect/on-screen capture — no LED ring, haptic motor, or GPIO shutter button exist there), (2) `ui_controller`/`awakening`/`audio_feedback`'s awakening sequence redesigned per Doc 2.3 (currently still LED-ring/haptic-motor logic), (3) `orchestrator` split across the two-app boundary with the Doc 3.0 §3 pairing/sync layer (net-new — doesn't exist yet), (4) `dashboard/` replaced by a native Parent Suite app per Doc 2.2. Runtime decided (Epigenome 025): **native Kotlin/Java**, this Python becomes the algorithm spec. A multi-session structural effort — start deliberately, not as a side-thread.
+- **Replatform — ALL FOUR ITEMS COMPLETE (2026-06-09):** `prism/` (the Python reference stack) replatformed as two linked Android apps; runtime is Kotlin/Java, Python becomes the algorithm spec (Epigenome 025 + 026):
+  1. ✅ `hal/` rebuilt natively for Android — `CompanionHal`, `CameraSource`, `MicrophoneSource`, `SpeakerOutput`, `HapticOutput` interfaces + Android implementations in `:companion-app`
+  2. ✅ Awakening redesigned per Doc 2.3 — `AwakeningChoreographer`, `AwakeningMachine` (StateFlow-based), `PresentationCanvas`, `MechanicalPresentationScreen`, `AwakenedPresentationScreen`, `CompanionScreen` — all in `:companion-app`
+  3. ✅ Orchestrator split + pairing/sync — `:sync` module (ECDH pairing, `LinkedDeviceRegistry`, `EnvelopeCipher`, `SyncTransport`, `SessionSummary`/`MenuState` payloads; 79 tests passing on JVM); `CompanionOrchestrator` in `:companion-app`
+  4. ✅ `dashboard/` replaced by native Parent Suite app — `:parent-suite-app` complete: `ConceptRecord`/`ConceptTileState`/`Pacing`/`ChildProfile` data layer; `ParentSuiteViewModel`; `MapScreen` (2-col grid, all 4 tile states, counter-balance always visible); `TrajectoryScreen` (chronological, banded text only); `PairingScreen` (QR generation via BarcodeEncoder, TTL countdown, linked-devices list); `SettingsScreen`; `PreviewModeScreen` (honest "awaiting Companion" state — Companion pairing module not yet written); `ParentNavHost` (bottom-nav + nested destinations); `MainActivity`; `PrismParentApp`
+
+  **All four replatform items are now complete** — including the Companion's Android HAL (`CameraXSource`, `AndroidMicrophone`, `AndroidSpeaker`, `AndroidHaptics`), `MlKitRecognitionEngine` + `RecognitionDatabase` (ML Kit face detection + pixel-similarity template matching; upgrade path to TFLite embedding model documented), `TfliteVisionClassifier` (TFLite Task Vision with graceful `MockVisionClassifier` fallback when model asset absent), `AnthropicLlmClient` (HTTP POST to `/v1/messages` via `HttpURLConnection`; API key from `ApiKeyStore`/SharedPreferences), enrollment UX (`CompanionEnrollmentScreen`), admin overlay + navigation (`CompanionNavHost`, long-press admin menu → enrollment / pairing / API key screens), `CompanionViewModel` (full orchestrator wiring with all real implementations), and `MainActivity` wired to `CompanionNavHost`.
+
+  **What remains before a fully production-ready session:**
+  - Bundle `mobilenet_v1.tflite` + `labels.txt` in `src/main/assets/` to activate real TFLite inference (without it, `TfliteVisionClassifier` falls back to `MockVisionClassifier`).
+  - Enter an Anthropic API key via the admin overlay → "Set API key" screen to activate the smart-brain path (without it, `PerspectiveEngine` uses offline fallback phrases).
+  - Run the enrollment flow (admin overlay → "Enroll child") on the actual device with the child's face to activate awakening.
 
 ## §4 Next actions
 1. Architect directs the next design thread (parent-suite UX is the lead candidate).

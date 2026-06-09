@@ -8,13 +8,16 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewModelScope
 import com.cappsconsulting.prism.companion.awakening.AwakeningChoreographer
 import com.cappsconsulting.prism.companion.awakening.AwakeningMachine
+import com.cappsconsulting.prism.companion.data.RecognitionDatabase
 import com.cappsconsulting.prism.companion.hal.CompanionHal
 import com.cappsconsulting.prism.companion.hal.android.AndroidHaptics
 import com.cappsconsulting.prism.companion.hal.android.AndroidMicrophone
 import com.cappsconsulting.prism.companion.hal.android.AndroidSpeaker
 import com.cappsconsulting.prism.companion.hal.android.CameraXSource
-import com.cappsconsulting.prism.companion.recognition.NotEnrolledRecognitionEngine
-import com.cappsconsulting.prism.companion.vision.MockVisionClassifier
+import com.cappsconsulting.prism.companion.llm.AnthropicLlmClient
+import com.cappsconsulting.prism.companion.llm.ApiKeyStore
+import com.cappsconsulting.prism.companion.recognition.MlKitRecognitionEngine
+import com.cappsconsulting.prism.companion.vision.TfliteVisionClassifier
 import com.cappsconsulting.prism.engine.config.PrismConfig
 import com.cappsconsulting.prism.engine.grounding.GroundingAccumulator
 import com.cappsconsulting.prism.engine.innerlife.InnerLifeEngine
@@ -45,13 +48,14 @@ private const val TAG = "CompanionViewModel"
  * are non-null by the time Compose first renders, and the re-entrancy guard prevents
  * double-initialization on activity restarts.
  *
- * What's wired with honest placeholders:
- * - [MockVisionClassifier]: cycles a known label list — real [TfliteVisionClassifier]
- *   needs a bundled model asset and an `Interpreter` pipeline.
- * - [NotEnrolledRecognitionEngine]: always says "not enrolled" — no false recognition,
- *   no awakening until a real enrollment UX lands.
- * - `llmClient = null` in [PerspectiveEngine]: offline-fallback templates only — a real
- *   [AnthropicLlmClient] (HTTP via the Anthropic API) is next-step work.
+ * What's wired:
+ * - [TfliteVisionClassifier]: reads `assets/mobilenet_v1.tflite` if present; falls back
+ *   to [MockVisionClassifier] gracefully when model asset hasn't been bundled yet.
+ * - [MlKitRecognitionEngine]: ML Kit face detection + pixel-similarity template matching
+ *   in `recognition.db`. Upgrade path to TFLite embedding model documented in that class.
+ * - [AnthropicLlmClient]: HTTP POST to `/v1/messages`; API key from [ApiKeyStore]
+ *   (SharedPreferences). Throws if no key configured → [PerspectiveEngine] falls back
+ *   to offline templates.
  */
 class CompanionViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -61,11 +65,42 @@ class CompanionViewModel(application: Application) : AndroidViewModel(applicatio
     private var _cameraSource: CameraXSource? = null
     val cameraPreviewView: PreviewView? get() = _cameraSource?.previewView
 
+    private var _hal: CompanionHal? = null
+    private var _recognitionEngine: MlKitRecognitionEngine? = null
+    private var _config: PrismConfig? = null
+
+    private val _apiKeyStore = ApiKeyStore(application)
+    val apiKeyStore: ApiKeyStore get() = _apiKeyStore
+
+    /** Child name from config — shown in enrollment and other parent-facing UI. */
+    val childName: String get() = _config?.childName ?: "your child"
+
+    /** Whether the child has been enrolled — delegates to the recognition engine's in-memory cache. */
+    fun isEnrolled(): Boolean = _recognitionEngine?.isEnrolled() ?: false
+
+    /**
+     * Captures [frameCount] frames from the running camera and passes them to
+     * [MlKitRecognitionEngine.enroll]. Returns true if at least one frame contained a
+     * detectable face and the template was stored. Called from [CompanionEnrollmentScreen].
+     */
+    suspend fun enrollChild(frameCount: Int = 5): Boolean {
+        val hal = _hal ?: return false
+        val engine = _recognitionEngine ?: return false
+        val frames = (1..frameCount).map { hal.camera.captureFrame() }
+        return engine.enroll(frames)
+    }
+
     fun initialize(lifecycleOwner: LifecycleOwner) {
         if (_orchestrator != null) return
 
         val app = getApplication<Application>()
         val config = PrismConfig()
+        _config = config
+
+        // Recognition database — separate from the main session DB per Hard Line 3.
+        val recognitionDb = RecognitionDatabase.getDatabase(app)
+        val recognitionEngine = MlKitRecognitionEngine(recognitionDb.faceTemplateDao())
+        _recognitionEngine = recognitionEngine
 
         // HAL — Android implementations of the four hardware interfaces
         val cameraSource = CameraXSource(app, lifecycleOwner)
@@ -76,6 +111,7 @@ class CompanionViewModel(application: Application) : AndroidViewModel(applicatio
             speaker = AndroidSpeaker(app),
             haptics = AndroidHaptics(app),
         )
+        _hal = hal
 
         // Engine layer — pure Kotlin, no Android deps
         val persona = Personas.PIP
@@ -92,7 +128,11 @@ class CompanionViewModel(application: Application) : AndroidViewModel(applicatio
         val grounding = GroundingAccumulator(config)
         val safety = SafetyGate(config)
         val learningLog = LearningLog(grounding)
-        val perspective = PerspectiveEngine(config, safety, llmClient = null)
+        val perspective = PerspectiveEngine(
+            config = config,
+            safety = safety,
+            llmClient = AnthropicLlmClient(_apiKeyStore),
+        )
 
         // Awakening layer
         val awakening = AwakeningMachine()
@@ -109,8 +149,8 @@ class CompanionViewModel(application: Application) : AndroidViewModel(applicatio
             safety = safety,
             learningLog = learningLog,
             perspective = perspective,
-            vision = MockVisionClassifier(),
-            recognition = NotEnrolledRecognitionEngine(),
+            vision = TfliteVisionClassifier(app),
+            recognition = recognitionEngine,
             awakening = awakening,
             choreographer = choreographer,
             scope = viewModelScope,

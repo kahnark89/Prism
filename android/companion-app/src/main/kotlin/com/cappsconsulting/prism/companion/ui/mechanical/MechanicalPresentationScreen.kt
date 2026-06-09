@@ -79,15 +79,22 @@ fun MechanicalPresentationScreen(
     presentation: PresentationState,
     lastReadout: VisionReadout?,
     onTapToLook: () -> Unit,
+    onAdminGesture: (() -> Unit)? = null,
     cameraPreviewView: PreviewView? = null,
     modifier: Modifier = Modifier,
 ) {
     val currentOnTapToLook by rememberUpdatedState(onTapToLook)
+    val currentOnAdmin by rememberUpdatedState(onAdminGesture)
 
     Box(
         modifier = modifier
             .fillMaxSize()
-            .pointerInput(Unit) { detectTapGestures(onTap = { currentOnTapToLook() }) },
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = { currentOnTapToLook() },
+                    onLongPress = { currentOnAdmin?.invoke() },
+                )
+            },
     ) {
         if (cameraPreviewView != null) {
             AndroidView(factory = { cameraPreviewView }, modifier = Modifier.fillMaxSize())

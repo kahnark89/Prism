@@ -44,6 +44,7 @@ private const val TAG = "CompanionScreen"
 fun CompanionScreen(
     orchestrator: CompanionOrchestrator,
     cameraPreviewView: PreviewView? = null,
+    onAdminGesture: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val awakeningState by orchestrator.awakeningState.collectAsState()
@@ -68,6 +69,7 @@ fun CompanionScreen(
             presentation = presentation,
             lastReadout = lastReadout,
             onTapToLook = onTapToLook,
+            onAdminGesture = onAdminGesture,
             cameraPreviewView = cameraPreviewView,
             modifier = modifier,
         )

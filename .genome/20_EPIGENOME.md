@@ -220,3 +220,47 @@
 **Effect/Commits:** 8 files created/updated in `:companion-app` — `hal/android/{CameraXSource,AndroidMicrophone,AndroidSpeaker,AndroidHaptics}.kt`, `recognition/NotEnrolledRecognitionEngine.kt`, `pairing/{CompanionPairingViewModel,CompanionPairingScreen,AndroidKeyStorage}.kt`, `orchestrator/CompanionViewModel.kt`, `ui/CompanionScreen.kt` (threaded `cameraPreviewView`), `ui/mechanical/MechanicalPresentationScreen.kt` (accepts `cameraPreviewView: PreviewView?`), `MainActivity.kt` (orchestrator wired, placeholder removed). Both apps are now complete and ready for a first real session.
 
 **Avoids:** Binding `Preview` and `ImageAnalysis` in separate `bindToLifecycle` calls (silently unbinds one when the other is added). Faking biometric recognition (`NotEnrolledRecognitionEngine` — honesty contract). Blocking the build on Android Keystore raw-byte incompatibility (SharedPreferences bridge, upgrade path documented). Leaving `llmClient` as an unresolved open question (null = offline templates, named honestly). Leaving `AwaitingCompanionPlaceholder` after the pieces it was waiting for arrived.
+
+### 028 · 2026-06-09 · Claude Code (remote) · FULL STACK COMPLETE: TFLite classifier, ML Kit recognition, Anthropic LLM client, enrollment UX, navigation
+**Cause:** User: "finish the remaining work." Epigenome 027 had named three remaining pieces: `TfliteVisionClassifier`, enrollment UX for `RecognitionEngine`, `AnthropicLlmClient`. Three additional pieces emerged as necessary once those were scoped: the Room data layer for face templates, the navigation host to connect enrollment/pairing/settings, and an API key entry screen.
+
+**Reasoning:** Key structural decisions in this pass:
+
+1. **`CameraFrame.toBitmap()` as a shared extension** in `hal/CameraFrameExtensions.kt` — both `TfliteVisionClassifier` and `MlKitRecognitionEngine` need `CameraFrame → Bitmap`; putting it in the `hal` package (where `CameraFrame` lives) avoids duplicating a 10-line function and names it once.
+
+2. **`TfliteVisionClassifier` graceful fallback** — `ImageClassifier.createFromFileAndOptions()` throws `IOException` when `mobilenet_v1.tflite` is absent from assets. Catching it in the constructor (`runCatching { }`) and setting `classifier = null` means `infer()` delegates to `MockVisionClassifier` automatically — the documented shipping default until model assets land, not a silent failure.
+
+3. **`MlKitRecognitionEngine` pixel-similarity baseline** — ML Kit Face Detection (`FaceDetection.getClient()`) gives bounding boxes but NOT face embeddings. The honest baseline: crop the face region to 64×64 grayscale, normalize to zero-mean/unit-variance, store the float array as `ByteArray` in Room; recognize via cosine similarity ≥ 0.75. Documented upgrade path: swap the pixel-similarity template for a TFLite FaceNet/MobileNetV2 embedding — same Room seam, same DAO. ML Kit `Task<T>` bridged to coroutines via `suspendCancellableCoroutine` (no `kotlinx-coroutines-play-services` in the catalog).
+
+4. **`RecognitionDatabase` separate from main session DB** — named constraint from `RecognitionEngine`'s kdoc: "separate recognition database (never in the main db)." Enforced structurally by using a distinct `RoomDatabase` subclass (`RecognitionDatabase`) and a distinct file name (`recognition.db`).
+
+5. **`MlKitRecognitionEngine.isEnrolled()` in-memory cache** — the interface is non-suspend; the Room `count()` query is suspend. Caching the enrolled state as `@Volatile var enrolledCache: Boolean` initialized asynchronously in `init {}` via `bgScope.launch` avoids both `runBlocking` on the main thread and a non-suspend Room query. Default is `false` (not enrolled) until the async query resolves — conservative.
+
+6. **`deleteTemplates()` is non-suspend** — fires `bgScope.launch { dao.deleteAll() }` (fire-and-forget on IO dispatcher) and sets `enrolledCache = false` synchronously. The parent-callable contract doesn't require awaiting the delete; the cache is the authoritative state for the session.
+
+7. **`AnthropicLlmClient` uses `HttpURLConnection`** — no OkHttp/Ktor in the catalog. `HttpURLConnection` is sufficient for one POST per tap-to-look. Runs on `Dispatchers.IO`. JSON serialized/deserialized via `kotlinx.serialization.json` (already in companion's dependencies). If no API key is set, throws `IOException` → `PerspectiveEngine` catches and falls back to offline templates.
+
+8. **Admin overlay via long-press on `MechanicalPresentationScreen`** — `detectTapGestures(onTap = ..., onLongPress = ...)` in `MechanicalPresentationScreen`. `onAdminGesture: (() -> Unit)?` is null by default so existing standalone uses are unaffected. `CompanionScreen` threads it from `CompanionNavHost`'s `navigate("admin")` call. Long-press threshold is long enough that exploratory child tapping won't trigger it.
+
+9. **`CompanionNavHost` with `popUpTo("admin") { inclusive = true }`** — navigating from the admin menu to enrollment/pairing/settings pops the admin menu off the back stack so Back from those screens returns directly to the session screen, not the menu. Clean UX: one tap to get to the session, not two.
+
+10. **`CompanionViewModel` updated to wire all real implementations** — `TfliteVisionClassifier`, `MlKitRecognitionEngine`, `AnthropicLlmClient`. Exposes `childName`, `isEnrolled()`, `enrollChild(frameCount)`, and `apiKeyStore` for the UI layer. `enrollChild()` captures frames from the running `CameraXSource` and passes them to `MlKitRecognitionEngine.enroll()`.
+
+**Effect/Commits:** 12 files created/updated:
+- `hal/CameraFrameExtensions.kt` — shared `toBitmap()` extension
+- `data/{FaceTemplateEntity,FaceTemplateDao,RecognitionDatabase}.kt` — Room schema in `recognition.db`
+- `recognition/MlKitRecognitionEngine.kt` — face detection + template matching
+- `vision/TfliteVisionClassifier.kt` — TFLite with fallback
+- `llm/{ApiKeyStore,AnthropicLlmClient}.kt` — API key store + HTTP LLM client
+- `ui/enrollment/CompanionEnrollmentScreen.kt` — guided enrollment UI
+- `ui/settings/ApiKeyScreen.kt` — API key entry
+- `ui/CompanionNavHost.kt` — navigation host + admin menu
+- `ui/mechanical/MechanicalPresentationScreen.kt` — added `onAdminGesture` long-press
+- `ui/CompanionScreen.kt` — threaded `onAdminGesture`
+- `orchestrator/CompanionViewModel.kt` — wired all real implementations
+- `MainActivity.kt` — uses `CompanionNavHost`; added `pairingViewModel`
+- `companion-app/build.gradle.kts` — added `navigation-compose`
+
+**What remains before a fully production-ready session:** bundle `mobilenet_v1.tflite` in assets (activates real TFLite inference), enter API key via admin overlay (activates smart-brain path), run enrollment on device (activates awakening).
+
+**Avoids:** Pixel-based recognition without documenting its limitations (pixel-similarity + upgrade path both named in kdoc). Blocking the build on a missing model asset (`TfliteVisionClassifier` catches the exception and falls back). Navigating from the admin menu without clearing it from the back stack (`popUpTo` pattern). Requiring `kotlinx-coroutines-play-services` for ML Kit Task bridging (single `suspendCancellableCoroutine` extension handles it). Leaving the pairing screen unreachable from the Companion app (admin menu → "Pair with Parent Suite").

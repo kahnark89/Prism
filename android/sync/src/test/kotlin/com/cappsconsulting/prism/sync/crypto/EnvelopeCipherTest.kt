@@ -65,7 +65,7 @@ class EnvelopeCipherTest {
     }
 
     @Test
-    fun `each sealing draws a fresh nonce — identical plaintexts still produce distinct envelopes`() {
+    fun `each sealing draws a fresh nonce -- identical plaintexts still produce distinct envelopes`() {
         val key = randomKey()
         val plaintext = "same message, twice".toByteArray()
 

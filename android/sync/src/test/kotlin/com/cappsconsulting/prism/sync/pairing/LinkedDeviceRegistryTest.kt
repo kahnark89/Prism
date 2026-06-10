@@ -26,7 +26,7 @@ class LinkedDeviceRegistryTest {
     }
 
     @Test
-    fun `unlinking one device revokes only that one — the others remain linked, untouched`() {
+    fun `unlinking one device revokes only that one -- the others remain linked, untouched`() {
         val registry = LinkedDeviceRegistry()
         registry.link(deviceOf("mom-phone"))
         registry.link(deviceOf("dad-tablet"))

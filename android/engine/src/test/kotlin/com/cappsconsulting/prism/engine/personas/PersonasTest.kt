@@ -44,7 +44,7 @@ class PersonasTest {
     }
 
     @Test
-    fun `mechanical is the pre-awakening voice — factual lens, neutral baselines, no life lesson`() {
+    fun `mechanical is the pre-awakening voice -- factual lens, neutral baselines, no life lesson`() {
         val mechanical = Personas.MECHANICAL
         assertThat(mechanical.name).isEqualTo("Prism")
         assertThat(mechanical.lens).isEqualTo("factual")

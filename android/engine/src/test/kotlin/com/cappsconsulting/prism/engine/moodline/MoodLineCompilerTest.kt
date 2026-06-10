@@ -16,7 +16,7 @@ class MoodLineCompilerTest {
         InnerLifeState(m = m, e = e, c = c, a = a, s = s, m0 = m, e0 = e, c0 = c, a0 = a, s0 = s, a0Seed = a, whim = whim)
 
     @Test
-    fun `compile narrates band language only — never a number, anywhere (Hard Line 6)`() {
+    fun `compile narrates band language only -- never a number, anywhere (Hard Line 6)`() {
         val state = stateOf(m = 0.8, e = 0.2, c = 0.9, a = 0.5, s = 0.5)
         val line = compiler.compile(state, Personas.PIP, "Naomi", emptyList(), timeOfDay = 12.0)
 

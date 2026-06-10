@@ -95,7 +95,7 @@ class PerspectiveEngineTest {
     }
 
     @Test
-    fun `a successful call returns the model's voice, sanitized and trimmed — not the fallback`() = runTest {
+    fun `a successful call returns the model's voice, sanitized and trimmed -- not the fallback`() = runTest {
         val client = FakeLlmClient(response = "  Look at that apple! Want to count its seeds together?  ")
         val engine = PerspectiveEngine(cfg, safety, client)
 

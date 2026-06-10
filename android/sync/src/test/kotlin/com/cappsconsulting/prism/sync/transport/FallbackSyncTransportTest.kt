@@ -32,7 +32,7 @@ class FallbackSyncTransportTest {
     private fun envelopeOf(tag: Byte) = SealedEnvelope(nonce = byteArrayOf(tag), ciphertext = byteArrayOf(tag, tag))
 
     @Test
-    fun `sends over the peer link when the device is reachable — the local-first case`() = runTest {
+    fun `sends over the peer link when the device is reachable -- the local-first case`() = runTest {
         val peerToPeer = RecordingTransport()
         val relay = RecordingTransport()
         val transport = FallbackSyncTransport(peerToPeer, relay, isPeerReachable = { true })
@@ -46,7 +46,7 @@ class FallbackSyncTransportTest {
     }
 
     @Test
-    fun `falls through to the relay when the peer is unreachable — the away-from-home case`() = runTest {
+    fun `falls through to the relay when the peer is unreachable -- the away-from-home case`() = runTest {
         val peerToPeer = RecordingTransport()
         val relay = RecordingTransport()
         val transport = FallbackSyncTransport(peerToPeer, relay, isPeerReachable = { false })
@@ -60,7 +60,7 @@ class FallbackSyncTransportTest {
     }
 
     @Test
-    fun `reachability is decided per-send, never cached — being home for one message doesn't fix the route`() = runTest {
+    fun `reachability is decided per-send, never cached -- being home for one message doesn't fix the route`() = runTest {
         val peerToPeer = RecordingTransport()
         val relay = RecordingTransport()
         var homeNow = true

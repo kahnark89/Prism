@@ -39,7 +39,7 @@ class PairingHandshakeTest {
     }
 
     @Test
-    fun `every freshly generated keypair is unique — no reuse across pairing attempts`() {
+    fun `every freshly generated keypair is unique -- no reuse across pairing attempts`() {
         val first = PairingHandshake.generateEphemeralKeyPair()
         val second = PairingHandshake.generateEphemeralKeyPair()
 

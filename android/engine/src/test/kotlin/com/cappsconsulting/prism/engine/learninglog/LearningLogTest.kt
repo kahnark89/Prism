@@ -47,7 +47,7 @@ class LearningLogTest {
     }
 
     @Test
-    fun `engagement-only event opens exposure but never increments confidence — the OGC hard rule`() {
+    fun `engagement-only event opens exposure but never increments confidence -- the OGC hard rule`() {
         val grounding = GroundingAccumulator(cfg)
         val log = LearningLog(grounding)
 

@@ -1,5 +1,7 @@
 # Prism — Document 1.6: The Living Engine
 
+> **⚠ HARDWARE SECTIONS SUPERSEDED (platform pivot, Epigenome 024 · 2026-06-08).** The engine specified here (inner life, memory, reveals, agency) is still canonical and is implemented in `prism/engines/` (reference spec) and `android/engine/` (shipping Kotlin port). What's stale: LED-ring/haptic-motor/round-display expression channels and the §6 awakening sequence built on them — replaced by phone-native channels in `Prism_2.3_Awakening_Choreography.md`. Platform: `Prism_3.0_Platform_Architecture.md`.
+
 *The definitive specification for the magic. Hardware carries it; this is the thing itself. Weighted to priority: Inner Life > Memory > Earned Reveals > Agency.*
 
 > **The thesis of this whole document:** Consistency is the enemy of aliveness. An LLM is, by default, perfectly consistent and always available — which is exactly why chatbots feel dead. Nothing alive is consistent. The magic is built by layering *state, drift, and bounded unpredictability* on top of the language model. We are not making the model smarter. We are making it *moody.*

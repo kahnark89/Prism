@@ -6,7 +6,7 @@
 **Primary user:** ages 3–5, designed to scale to ~12
 **Build tier:** Tier 2 (custom product), prototyped on dev hardware
 **Platform IP:** uses CIAER+™ and mp4Real™ (Capps Consulting Company LLC)
-**Status:** architecture complete; build not yet started
+**Status:** architecture complete · **hardware sections superseded** by the platform pivot (Epigenome 024 · 2026-06-08) — Prism is now two linked Android apps, see `Prism_3.0_Platform_Architecture.md`. Code exists: `android/` (Kotlin, shipping) + `prism/` (Python reference spec).
 **Version:** Master v1.0 (consolidates Docs 01, 1.5, 1.6, 1.7, 1.8)
 
 ---

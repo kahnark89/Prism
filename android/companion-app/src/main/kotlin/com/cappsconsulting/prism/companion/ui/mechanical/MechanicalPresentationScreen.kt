@@ -36,6 +36,7 @@ import androidx.core.content.ContextCompat
 import com.cappsconsulting.prism.companion.orchestrator.VisionReadout
 import com.cappsconsulting.prism.companion.presentation.PresentationState
 import com.cappsconsulting.prism.companion.ui.PresentationAccentBorder
+import com.cappsconsulting.prism.engine.perspective.PerspectiveEngine
 import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 
@@ -58,8 +59,10 @@ import kotlinx.coroutines.suspendCancellableCoroutine
  *  3. [GlassBoxOverlay] — [lastReadout] rendered as the label-and-confidence-bar
  *     pairing that Doc 1.6 §5 calls the AI-literacy curriculum *itself*:
  *     "Being wrong becomes the fun part... where AI-literacy and emotional
- *     safety become the same thing." A 41% confidence reading isn't a flaw
- *     being surfaced apologetically; it's the lesson, displayed plainly.
+ *     safety become the same thing." A "just guessing" reading isn't a flaw
+ *     being surfaced apologetically; it's the lesson, displayed plainly —
+ *     as a bar and banded words, never a numeral (Hard Line 6, ratified
+ *     absolute: Epigenome 029).
  *
  * The tap gesture spans the whole screen — "the shutter button -> the tap
  * gesture," named in [com.cappsconsulting.prism.companion.orchestrator.CompanionOrchestrator]'s
@@ -154,8 +157,12 @@ private suspend fun awaitCameraProvider(context: Context): ProcessCameraProvider
 
 /**
  * Doc 1.6 §5's "glass box," in text: what the fast brain thinks it's looking
- * at, and exactly how sure it is — not rounded off, not softened, not held
- * back until it clears some "good enough to show a kid" bar. [readout] is
+ * at, and how sure it is — honestly, but never as a numeral. Hard Line 6 is
+ * absolute (architect sign-off, Epigenome 029): no visible numeric score
+ * anywhere in the device, the child-facing glass box included. The uncertainty
+ * itself is still shown plainly — a bar the eye can read and the same banded
+ * words ([PerspectiveEngine.confidenceWords]) the companion uses when it
+ * speaks, so what she sees and what she hears never disagree. [readout] is
  * `null` for the stretch between launch and the first tap; see
  * [com.cappsconsulting.prism.companion.orchestrator.CompanionOrchestrator.lastReadout]'s
  * kdoc for why that gap is shown honestly rather than papered over with an
@@ -193,7 +200,7 @@ private fun GlassBoxOverlay(readout: VisionReadout?, modifier: Modifier = Modifi
                 .clip(RoundedCornerShape(5.dp)),
         )
         Text(
-            text = readout?.let { "${(it.confidence * 100).toInt()}%" } ?: "—",
+            text = readout?.let { PerspectiveEngine.confidenceWords(it.confidence) } ?: "—",
             color = Color.White.copy(alpha = 0.75f),
             style = MaterialTheme.typography.labelLarge,
         )

@@ -1,7 +1,7 @@
 # 10_PHENOTYPE — Prism (live state)
 
 > High-churn file. Any client updates this freely. This is "what we're doing right now."
-> **Last touched:** 2026-06-09 by Claude Code (remote) · All Companion HAL Android implementations, RecognitionEngine, Companion pairing UI, CompanionViewModel, and MainActivity wiring are now complete. Both apps are fully wired and ready for a first real session.
+> **Last touched:** 2026-06-10 by Claude Code (remote) · Full-codebase review session: both test suites verified green (34/34 Python, 79/79 JVM); findings flagged in §3 (incl. one proposed genotype clarification — Hard Line 6 scope).
 > **Pending ratification:** 2 unconfirmed deeper-why hypotheses in Epigenome 016, 017 (018 ratified into 019). Confirm/edit/drop when convenient.
 
 ---
@@ -52,6 +52,9 @@
   - Bundle `mobilenet_v1.tflite` + `labels.txt` in `src/main/assets/` to activate real TFLite inference (without it, `TfliteVisionClassifier` falls back to `MockVisionClassifier`).
   - Enter an Anthropic API key via the admin overlay → "Set API key" screen to activate the smart-brain path (without it, `PerspectiveEngine` uses offline fallback phrases).
   - Run the enrollment flow (admin overlay → "Enroll child") on the actual device with the child's face to activate awakening.
+
+- **PROPOSED GENOTYPE CLARIFICATION (2026-06-10, from full-codebase review — awaiting sign-off):** Hard Line 6 as written ("no visible numeric score, anywhere in the device — to the child or the parent") textually contradicts the implemented child-facing `GlassBoxOverlay`, which deliberately shows the fast brain's numeric vision confidence as the glass-box lesson (Epigenome 026 even cites this contrast approvingly). Both implementations treat HL6 as scoped to the *grounding/learning* confidence (the measurement layer), not the vision model's per-guess confidence (the teaching content) — but the genotype text doesn't say that. Proposal: add a scoping clause to HL6, e.g. "…applies to the grounding/learning measurement; the fast brain's per-guess vision confidence shown to the child in mechanical mode is the glass-box lesson and is exempt." Architect sign-off required (reflexivity firewall). Related, lower-stakes: the retired Python dashboard (`prism/dashboard/routers/grounding.py:27,45`) returns numeric grounding confidence — it predates the HL6 broadening (Epigenome 022) and is superseded by the compliant native Parent Suite, but as "reference spec" it now contradicts the genome; needs either a one-line band-only fix or an explicit superseded-annotation. Same question for `perspective_engine.py:117` / the Kotlin `PerspectiveEngine.buildUserMessage` sending "(NN% sure)" into the LLM prompt — the LLM could speak the number aloud; consider banded words in the prompt instead.
+- **Review-session maintenance items (2026-06-10, no sign-off needed, queued):** (a) JVM test method names contain em dashes — compile fails under non-UTF-8 locales (`InvalidPathException` in POSIX containers); all 79 tests pass under UTF-8. Fix: rename or pin UTF-8 in CI/gradle. (b) AGENTS.md Tooling notes still say "No code yet" — stale; build/test commands (`pytest tests/`, `./gradlew :engine:test :sync:test`, `assembleDebug`) belong there now. (c) README still says "build-pending." (d) CI builds both APKs but runs neither the JVM engine/sync tests nor the Python tests. (e) Stale docs (01, 1.5, Master Architecture) carry no superseded-banner yet (already tracked above). (f) `setup_links.sh` never run — CLAUDE.md/GEMINI.md are pointer stubs, fine but not symlinks.
 
 ## §4 Next actions
 1. Architect directs the next design thread (parent-suite UX is the lead candidate).

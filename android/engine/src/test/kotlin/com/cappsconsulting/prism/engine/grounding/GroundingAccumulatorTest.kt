@@ -16,7 +16,7 @@ class GroundingAccumulatorTest {
     private val cfg = PrismConfig()
 
     @Test
-    fun `mere exposure never moves confidence — only reappearance with evidence does`() {
+    fun `mere exposure never moves confidence -- only reappearance with evidence does`() {
         val g = GroundingAccumulator(cfg)
         repeat(50) { g.recordExposure("spiral", nowEpochSeconds = 1000.0 + it) }
 
@@ -27,7 +27,7 @@ class GroundingAccumulatorTest {
     }
 
     @Test
-    fun `same-context reappearance is treated as an echo, not evidence — near-zero gain`() {
+    fun `same-context reappearance is treated as an echo, not evidence -- near-zero gain`() {
         val g = GroundingAccumulator(cfg)
         g.recordExposure("spiral")
         g.recordReappearance("spiral", newContext = "snail shell")
@@ -40,7 +40,7 @@ class GroundingAccumulatorTest {
     }
 
     @Test
-    fun `genuinely novel-context reappearance counts as real transfer — substantial gain`() {
+    fun `genuinely novel-context reappearance counts as real transfer -- substantial gain`() {
         val g = GroundingAccumulator(cfg)
         g.recordReappearance("spiral", newContext = "snail shell")
         val afterFirst = g.getRecord("spiral")!!.confidence

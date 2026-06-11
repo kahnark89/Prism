@@ -16,6 +16,11 @@ class ParentConfirmBody(BaseModel):
     concept: str
 
 
+# Hard Line 6 (ratified absolute, Epigenome 029): no numeric confidence on any
+# surface, parent-facing included — banded status only. The numeric value stays
+# internal to the accumulator (it may still order the list; it may not leave it).
+
+
 @router.get("/trajectories")
 async def get_grounding_trajectories():
     if _grounding is None:
@@ -24,7 +29,6 @@ async def get_grounding_trajectories():
     return [
         {
             "concept": r.concept,
-            "confidence": round(r.confidence, 3),
             "status": r.status,
             "parent_confirmations": r.parent_confirmations,
             "reappearances": len(r.context_distances),
@@ -42,6 +46,5 @@ async def parent_confirm(body: ParentConfirmBody):
     return {
         "ok": True,
         "concept": body.concept,
-        "confidence": round(rec.confidence, 3),
         "status": rec.status,
     }

@@ -38,7 +38,7 @@ class SafetyGateTest {
     }
 
     @Test
-    fun `each blocked category is caught — violence, adult content, substances, and unkindness`() {
+    fun `each blocked category is caught -- violence, adult content, substances, and unkindness`() {
         assertThat(gate.checkInput("don't be such an idiot").verdict).isEqualTo(SafetyVerdict.BLOCK)
         assertThat(gate.checkInput("let's talk about beer").verdict).isEqualTo(SafetyVerdict.BLOCK)
         assertThat(gate.checkInput("that movie was about a murder").verdict).isEqualTo(SafetyVerdict.BLOCK)
@@ -75,7 +75,7 @@ class SafetyGateTest {
     }
 
     @Test
-    fun `reason is populated for blocks and redirects but empty on pass — and never echoed into sanitized`() {
+    fun `reason is populated for blocks and redirects but empty on pass -- and never echoed into sanitized`() {
         val blocked = gate.checkInput("a knife")
         assertThat(blocked.reason).isNotEmpty()
         assertThat(blocked.sanitized).doesNotContain(blocked.reason)

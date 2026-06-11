@@ -95,7 +95,7 @@ class PerspectiveEngineTest {
     }
 
     @Test
-    fun `a successful call returns the model's voice, sanitized and trimmed — not the fallback`() = runTest {
+    fun `a successful call returns the model's voice, sanitized and trimmed -- not the fallback`() = runTest {
         val client = FakeLlmClient(response = "  Look at that apple! Want to count its seeds together?  ")
         val engine = PerspectiveEngine(cfg, safety, client)
 
@@ -173,7 +173,10 @@ class PerspectiveEngineTest {
                 "Never say anything scary, violent, or sad. " +
                 "End with a question or invitation to explore."
         )
+        // 0.83 > 0.66 -> "hi" band -> "very sure". Banded words, never a numeral:
+        // Hard Line 6 (ratified absolute, Epigenome 029) — a percentage in the
+        // prompt is a percentage the model can speak aloud to a pre-reader.
         assertThat(PerspectiveEngine.buildUserMessage(req))
-            .isEqualTo("I see: a butterfly (83% sure). Child asks: why does it have spots?")
+            .isEqualTo("I see: a butterfly (very sure). Child asks: why does it have spots?")
     }
 }

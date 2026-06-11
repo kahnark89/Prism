@@ -1,5 +1,7 @@
 # Prism — Document 01: The Plan
 
+> **⚠ SUPERSEDED (platform pivot, Epigenome 024 · 2026-06-08).** This document describes the original bespoke-hardware product (Pi5/CM5, custom carrier, enclosure, LED ring) — a form Prism no longer takes. Prism is now **two linked Android apps**; see `Prism_3.0_Platform_Architecture.md`. The design *ideas* here (two brains, glass box, safety layering, age-scaling) all carry forward; the hardware, BOM, and build-mission specifics do not. Preserved as design history (rejected path: `40_SHADOW.md` S09).
+
 *A DIY smart learning camera that shows a child many points of view on the world, and teaches how AI itself works. The build is the first lesson.*
 
 **Build tier:** Tier 2 (custom product) · **Primary users:** ages 3–5, designed to scale to 12 · **Builder:** adult with printer, soldering, and broad fabrication access

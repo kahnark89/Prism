@@ -5,9 +5,15 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
-# Build artifacts (when code begins)
+# Build artifacts
 __pycache__/
 *.pyc
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+venv/
+.venv/
 node_modules/
 dist/
 build/

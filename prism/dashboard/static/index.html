@@ -169,6 +169,10 @@ function fmtTime(ts) {
   return d.toLocaleString();
 }
 
+// Hard Line 6 (ratified absolute, Epigenome 029): no numeric score on any
+// surface — the bar is banded (one width per status), and there is no "%" text.
+const BAND_WIDTH = { exploring: '20%', getting_it: '55%', owns_it: '100%' };
+
 async function loadGrounding() {
   const records = await api('/grounding/trajectories');
   const el = document.getElementById('grounding-list');
@@ -176,8 +180,7 @@ async function loadGrounding() {
   el.innerHTML = records.map(r => `
     <div class="concept-row">
       <div class="concept-name">${r.concept}</div>
-      <div class="bar-wrap"><div class="bar ${r.status}" style="width:${Math.round(r.confidence*100)}%"></div></div>
-      <div style="font-size:0.75rem;color:#6b6480;min-width:32px">${Math.round(r.confidence*100)}%</div>
+      <div class="bar-wrap"><div class="bar ${r.status}" style="width:${BAND_WIDTH[r.status] || '20%'}"></div></div>
       <span class="status-chip ${r.status}">${r.status.replace('_',' ')}</span>
       <button class="confirm-btn" onclick="parentConfirm('${r.concept}')">Confirm ✓</button>
     </div>

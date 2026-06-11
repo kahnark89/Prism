@@ -1,5 +1,7 @@
 # Prism — Document 1.5: The Awakening & The Companions
 
+> **⚠ PARTIALLY SUPERSEDED (platform pivot, Epigenome 024 · 2026-06-08).** The emotional arc in this document — the awakening, the companions, the dilemmas — survives the pivot intact and is still canonical. What's stale: every hardware reference (the bespoke device, its LED/haptic/display channels) and the hardware-build framing of "Daddy's Project" (now a software setup ritual — enrolling name/face/voice together; see `00_GENOTYPE.md` Principle 10). Phone-native awakening choreography: `Prism_2.3_Awakening_Choreography.md`. Platform: `Prism_3.0_Platform_Architecture.md`.
+
 *The emotional core of the product. This is the document that turns a smart camera into a thing a child believes in. It comes after the Plan and before the first build Mission, because every technical choice from here on serves this story.*
 
 > **Read me first.** Everything in Document 01 (architecture, BOM, safety, age-scaling) still holds. This document doesn’t replace it — it gives it a soul, and adds one capability to the fast brain: **recognition.**

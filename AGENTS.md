@@ -39,6 +39,9 @@ Throughout and at the end of a session, distill salient decisions from our conve
 Summarize what changed in one line for the commit message, and list which genome files you touched.
 
 ## Tooling notes
-- No code yet — project is in design/architecture phase. When code begins, build/test/lint commands go here and nested `AGENTS.md` files go in each `src/` module.
+- **Code exists in two stacks.** `prism/` (Python) is the *reference spec* — the algorithm source of truth (equations, decay curves, safety gates), never shipping as a runtime (Epigenome 025). `android/` (Kotlin) is the shipping implementation: `:engine` (shared pure-logic port), `:sync` (pairing/crypto), `:companion-app` (child-facing), `:parent-suite-app` (parent-facing).
+- **Python tests:** `pip install -e ".[dev]" && pytest tests/` (34 tests).
+- **Android JVM tests:** `cd android && ./gradlew :engine:test :sync:test` (79 tests).
+- **Android builds:** `cd android && ./gradlew :companion-app:assembleDebug :parent-suite-app:assembleDebug` (needs the Android SDK; CI does this on every push — `.github/workflows/build-apks.yml`).
 - Clients: Claude (web/Code), Gemini, CLI agents. `CLAUDE.md` and `GEMINI.md` are mirrors of this file.
-- Canonical design reference: `docs/Prism_Master_Architecture_v1.md`.
+- Canonical design references: `docs/Prism_3.0_Platform_Architecture.md` (current two-app platform) and `docs/Prism_Master_Architecture_v1.md` (consolidated design — hardware sections superseded by Doc 3.0).

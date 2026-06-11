@@ -113,9 +113,24 @@ class PerspectiveEngine:
         )
 
     @staticmethod
+    def _confidence_words(confidence: float) -> str:
+        """Banded child-language words for the fast brain's per-guess confidence.
+
+        The only legal representation of confidence on any surface (Hard Line 6,
+        ratified absolute — Epigenome 029): a numeral in the prompt is a numeral
+        the model can speak aloud to a pre-reader. Same hi/mid/lo split as
+        ``_fallback``; mirrored by the Kotlin ``PerspectiveEngine.confidenceWords``.
+        """
+        if confidence > 0.66:
+            return "very sure"
+        if confidence > 0.34:
+            return "pretty sure"
+        return "just guessing"
+
+    @staticmethod
     def _build_user_message(req: PerspectiveRequest) -> str:
-        confidence_pct = int(req.vision_confidence * 100)
-        msg = f"I see: {req.vision_label} ({confidence_pct}% sure)."
+        words = PerspectiveEngine._confidence_words(req.vision_confidence)
+        msg = f"I see: {req.vision_label} ({words})."
         if req.child_question:
             msg += f" Child asks: {req.child_question}"
         return msg

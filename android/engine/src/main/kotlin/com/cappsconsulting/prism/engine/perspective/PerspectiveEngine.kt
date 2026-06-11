@@ -169,6 +169,21 @@ class PerspectiveEngine(
             else -> "lo"
         }
 
+        /**
+         * The same three bands rendered as child-language words — the only legal
+         * representation of the fast brain's per-guess confidence on any surface
+         * (Hard Line 6, ratified absolute by architect sign-off, Epigenome 029:
+         * no numeral, no percentage, anywhere — the glass box speaks in words a
+         * pre-reader can own). Used by both the LLM user message and the
+         * Companion's glass-box overlay so the spoken and shown vocabulary never
+         * drift apart.
+         */
+        fun confidenceWords(confidence: Double): String = when (confidenceBand(confidence)) {
+            "hi" -> "very sure"
+            "mid" -> "pretty sure"
+            else -> "just guessing"
+        }
+
         /** Direct port of `_build_system_prompt` — same four sections, same literal rules paragraph. */
         internal fun buildSystemPrompt(req: PerspectiveRequest): String =
             "${req.persona.systemPreamble}\n\n" +
@@ -178,10 +193,14 @@ class PerspectiveEngine(
                 "Never say anything scary, violent, or sad. " +
                 "End with a question or invitation to explore."
 
-        /** Direct port of `_build_user_message` — same percentage rounding (truncating `int()`), same optional question clause. */
+        /**
+         * Port of `_build_user_message`, same optional question clause — but the
+         * confidence is banded words, not a percentage (changed in lockstep with the
+         * Python reference spec, Epigenome 029): a numeral in the prompt is a numeral
+         * the model can speak aloud to a pre-reader, which Hard Line 6 forbids.
+         */
         internal fun buildUserMessage(req: PerspectiveRequest): String {
-            val confidencePct = (req.visionConfidence * 100).toInt()
-            var msg = "I see: ${req.visionLabel} ($confidencePct% sure)."
+            var msg = "I see: ${req.visionLabel} (${confidenceWords(req.visionConfidence)})."
             if (!req.childQuestion.isNullOrEmpty()) msg += " Child asks: ${req.childQuestion}"
             return msg
         }

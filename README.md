@@ -1,6 +1,6 @@
 # Prism
 
-A DIY smart learning camera for a young child (ages 3–5, scaling to ~12). Point it at an object and friendly AI characters give multiple points of view; it teaches how AI works (glass box, not black box), awakens for the child it recognizes, and feels alive. The build is the child's first tech project.
+A smart learning camera for a young child (ages 3–5, scaling to ~12), delivered as **two linked Android apps** — a child-facing Companion and a separately-installed Parent Suite. Point it at an object and friendly AI characters give multiple points of view; it teaches how AI works (glass box, not black box), awakens for the child it recognizes, and feels alive. The setup ritual — Dad and child teaching it who she is, together — is the first lesson.
 
 Capps Family Enterprises · uses CIAER+™ and mp4Real™ (Capps Consulting Company LLC).
 
@@ -32,4 +32,6 @@ Paste this prompt into any client:
 3. Install a git client on your phone so `.genome/` is editable/commitable in the moment.
 
 ## Status
-Design-complete, build-pending. Canonical reference: `docs/Prism_Master_Architecture_v1.md`.
+Design-complete; replatformed from the original bespoke-hardware plan to two linked Android apps (Epigenome 024). Both apps are built and wired: `android/` holds the Kotlin implementation (`:engine`, `:sync`, `:companion-app`, `:parent-suite-app`; 79 JVM tests), and `prism/` holds the Python reference spec the engine was ported from (34 tests — algorithm source of truth, not a shipping runtime). Remaining before a first real session: bundle the TFLite model asset, set an Anthropic API key, run on-device enrollment.
+
+Canonical references: `docs/Prism_3.0_Platform_Architecture.md` (current platform) · `docs/Prism_Master_Architecture_v1.md` (consolidated design; hardware sections superseded).

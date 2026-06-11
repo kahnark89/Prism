@@ -9,7 +9,7 @@ class MemoryEngineTest {
     private val cfg = PrismConfig()
 
     @Test
-    fun `encode below the salience gate is discarded — beats, not a transcript`() {
+    fun `encode below the salience gate is discarded -- beats, not a transcript`() {
         val m = MemoryEngine(cfg)
         val node = m.encode(concept = "puddle", episode = "stepped in a puddle", salience = 0.1)
         assertThat(node).isNull()
@@ -48,7 +48,7 @@ class MemoryEngineTest {
     }
 
     @Test
-    fun `advanceTime decays strength exponentially and prunes below the floor — discard by default`() {
+    fun `advanceTime decays strength exponentially and prunes below the floor -- discard by default`() {
         val m = MemoryEngine(cfg)
         m.setDay(0.0)
         val node = m.encode(concept = "spiral", episode = "seashell spiral", salience = 1.0)!!

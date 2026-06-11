@@ -1,7 +1,7 @@
 # 10_PHENOTYPE — Prism (live state)
 
 > High-churn file. Any client updates this freely. This is "what we're doing right now."
-> **Last touched:** 2026-06-09 by Claude Code (remote) · All Companion HAL Android implementations, RecognitionEngine, Companion pairing UI, CompanionViewModel, and MainActivity wiring are now complete. Both apps are fully wired and ready for a first real session.
+> **Last touched:** 2026-06-10 by Claude Code (remote) · Maintenance queue discharged + HL6 ratified ABSOLUTE by architect sign-off (Epigenome 029): banded words replace every numeral — glass box, LLM prompt, and retired dashboard all brought into compliance.
 > **Pending ratification:** 2 unconfirmed deeper-why hypotheses in Epigenome 016, 017 (018 ratified into 019). Confirm/edit/drop when convenient.
 
 ---
@@ -52,6 +52,9 @@
   - Bundle `mobilenet_v1.tflite` + `labels.txt` in `src/main/assets/` to activate real TFLite inference (without it, `TfliteVisionClassifier` falls back to `MockVisionClassifier`).
   - Enter an Anthropic API key via the admin overlay → "Set API key" screen to activate the smart-brain path (without it, `PerspectiveEngine` uses offline fallback phrases).
   - Run the enrollment flow (admin overlay → "Enroll child") on the actual device with the child's face to activate awakening.
+
+- ~~**PROPOSED GENOTYPE CLARIFICATION — HL6 scope**~~ — **RESOLVED (2026-06-10, architect sign-off, Epigenome 029):** Hard Line 6 is **absolute** — no numeral anywhere, the child-facing `GlassBoxOverlay` included (the recommended scope-to-grounding option was declined; preserved in Shadow S10). Implemented same session: shared banded vocabulary `confidenceWords()` ("just guessing" / "pretty sure" / "very sure") in both the Kotlin engine and the Python reference spec; `GlassBoxOverlay` shows bar + words, no "%" text; LLM prompt sends banded words so a number can never be spoken aloud; retired Python dashboard brought to band-only (router + HTML). Genotype HL6 clause updated (authorization record: Epigenome 029).
+- ~~**Review-session maintenance items (2026-06-10, no sign-off needed, queued)**~~ — **ALL DONE (2026-06-10, same day, architect-directed):** (a) ✅ em dashes in JVM test method names replaced with `--` (17 names across 11 files); 79/79 tests verified passing under the previously-failing POSIX locale. (b) ✅ AGENTS.md Tooling notes rewritten — "No code yet" replaced with the two-stack reality + build/test commands. (c) ✅ README status section rewritten for the Android platform; thesis line updated (two linked apps, setup ritual). (d) ✅ CI now runs `:engine:test :sync:test` before assembling APKs, plus a new `python-tests` job (`pytest tests/`); workflow also triggers on `prism/**`/`tests/**` changes. (e) ✅ Superseded-banners added to Docs 01, 1.5, 1.6 (hardware sections), and Master Architecture header. (f) ✅ `setup_links.sh` run — CLAUDE.md/GEMINI.md are now real symlinks. Also: .gitignore gained Python dev artifacts (`.pytest_cache/`, `*.egg-info/`, venvs). The stale-document flag (§1, Doc 3.0 §5 Q4) is now partially discharged: docs are *annotated* as superseded; a full content rework remains optional.
 
 ## §4 Next actions
 1. Architect directs the next design thread (parent-suite UX is the lead candidate).

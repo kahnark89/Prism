@@ -1,7 +1,7 @@
 # 10_PHENOTYPE — Prism (live state)
 
 > High-churn file. Any client updates this freely. This is "what we're doing right now."
-> **Last touched:** 2026-06-10 by Claude Code (remote) · Maintenance queue discharged + HL6 ratified ABSOLUTE by architect sign-off (Epigenome 029): banded words replace every numeral — glass box, LLM prompt, and retired dashboard all brought into compliance.
+> **Last touched:** 2026-06-11 by Claude Code (remote) · Cold-start hygiene pass: §1 design threads updated (Doc 2.3 done), §4 next actions rewritten to reflect completed replatform, §6 build status rewritten to describe the current reality (both stacks complete, tests passing, APKs building in CI).
 > **Pending ratification:** 2 unconfirmed deeper-why hypotheses in Epigenome 016, 017 (018 ratified into 019). Confirm/edit/drop when convenient.
 
 ---
@@ -22,8 +22,8 @@
 
 **Remaining queued design threads (priority order):**
 1. ~~Parent-suite UX~~ — **done**, see Doc 2.2 (zero open questions remain; carries forward unaffected by the pivot)
-2. **Awakening choreography spec — IN PROGRESS, redesigned for the new platform.** The original five-beat sequence (pause/spark/bloom/first breath/settle) was specified for a NeoPixel LED ring + dedicated haptic motor + round display (Doc 1.6 §6) — none of which exist on a phone. Architect directed: redesign now, against phone-native channels (screen + phone haptics + speaker), rather than waiting. → `docs/Prism_2.3_Awakening_Choreography.md`.
-3. **Mission 0 — First Light** — camera → TFLite → speech, offline, one weekend build. *(Note: "offline, on the prototype rig" language needs a pass — the rig no longer exists; the spirit — prove the core loop fast, cheap, in a weekend — carries forward to "prove it on a single Android device.")*
+2. ~~Awakening choreography spec~~ — **done.** Five-beat sequence redesigned for phone-native channels (screen + haptics + speaker) in `docs/Prism_2.3_Awakening_Choreography.md`; implemented as `AwakeningChoreographer` + `AwakeningMachine` in `:companion-app`.
+3. **Mission 0 — First Light** — prove the core loop on a real device: sideload the APK, set the API key, enroll Naomi, run a real session. This is the lead candidate for the next hands-on step (architect may redirect).
 
 ## §2 Acceptance (how we know the current phase is done)
 - Genome files committed to a git repo. ✅
@@ -57,9 +57,9 @@
 - ~~**Review-session maintenance items (2026-06-10, no sign-off needed, queued)**~~ — **ALL DONE (2026-06-10, same day, architect-directed):** (a) ✅ em dashes in JVM test method names replaced with `--` (17 names across 11 files); 79/79 tests verified passing under the previously-failing POSIX locale. (b) ✅ AGENTS.md Tooling notes rewritten — "No code yet" replaced with the two-stack reality + build/test commands. (c) ✅ README status section rewritten for the Android platform; thesis line updated (two linked apps, setup ritual). (d) ✅ CI now runs `:engine:test :sync:test` before assembling APKs, plus a new `python-tests` job (`pytest tests/`); workflow also triggers on `prism/**`/`tests/**` changes. (e) ✅ Superseded-banners added to Docs 01, 1.5, 1.6 (hardware sections), and Master Architecture header. (f) ✅ `setup_links.sh` run — CLAUDE.md/GEMINI.md are now real symlinks. Also: .gitignore gained Python dev artifacts (`.pytest_cache/`, `*.egg-info/`, venvs). The stale-document flag (§1, Doc 3.0 §5 Q4) is now partially discharged: docs are *annotated* as superseded; a full content rework remains optional.
 
 ## §4 Next actions
-1. Architect directs the next design thread (parent-suite UX is the lead candidate).
-2. Seed `kahnark89/animus-sdk` and `kahnark89/cortex-dev` repos using the delivered zip files.
-3. Optionally `./setup_links.sh` on Linux/macOS to make CLAUDE.md/GEMINI.md real symlinks.
+1. **Mission 0 — First Light (device work, no code needed):** sideload both APKs (CI builds them at `.github/workflows/build-apks.yml` → Actions tab), enter Anthropic API key via long-press admin menu → "Set API key", run enrollment (admin menu → "Enroll child"), have a first real session.
+2. **Seed tool repos** — `kahnark89/animus-sdk` and `kahnark89/cortex-dev` using the delivered zip files (if not already done).
+3. **Architect directs the next design thread** — Mission 0 is the lead candidate; alternatively a new design thread (co-evolution curriculum, session-persistence schema, etc.).
 
 ## §5 Deliverables on hand (in docs/)
 - `Prism_Master_Architecture_v1.md` — canonical reference (consolidates Docs 01–1.8). *(Hardware-bearing portions now superseded by Doc 3.0 — see stale-document flag, §1/§3.)*
@@ -73,6 +73,19 @@
 - `tools/README.md` — pointer to `animus-sdk` and `cortex-dev` repos.
 
 ## §6 Build status
-**Code exists, but targets the retired design — replatforming, not a from-scratch build.** A full single-process Python reference stack landed on `main` June 3 (`prism/` — HAL, engines, modules, personas, persistence, orchestrator, FastAPI dashboard; 34 tests passing), merged the same morning the platform pivot (Epigenome 024) landed. It was built entirely for the bespoke-hardware design (Pi target, NeoPixel LED ring, dedicated haptic motor, GPIO shutter button, single-device dashboard) — i.e., the design Epigenome 024 retired hours later. Reviewed 2026-06-08; verdict: the pure-logic core (`inner_life`, `memory`, `mood_line`, `grounding`, `personas`, `safety`, `learning_log` — the actual differentiating IP) **survives as the algorithm spec**; the hardware layer (`hal/` Pi targets, `ui_controller`'s LED compiler, the awakening sequence's LED/haptic-motor calls, the single-process orchestrator, the FastAPI dashboard) needs full replacement, redesign-per-Doc-2.3, or replatforming respectively — see Epigenome entry for the full breakdown.
-**Runtime decision (architect, this session):** the shared engine on Android will be a **native Kotlin/Java rewrite** — this Python stack becomes the reference *spec* (equations, rules, schemas translate directly), not an embedded runtime (Chaquopy/Kivy considered and declined — bridge overhead nobody had signed off on). This resolves the open question Doc 3.0 §2 left implicit ("one shared engine," runtime unnamed).
-**No physical hardware to acquire** — the BOM is now "a parent-provisioned phone/tablet" (Doc 3.0 §5 Q2: repurpose-old-device vs. buy-dedicated still open). Net: the pivot *shortens* the remaining road — it converts "build a device" into "replatform an already-proven reference implementation," removing the enclosure/supply-chain layer entirely.
+**Both stacks are complete and green.**
+
+**Python (`prism/`)** — algorithm reference spec. 34 tests passing (`pytest tests/`). This stack is never shipped as a runtime (Epigenome 025); it is the source of truth for equations, decay curves, and safety gates that the Kotlin port translates directly. HL6 banded-word fix applied (Epigenome 029); confidence numerals removed from grounding router + HTML dashboard.
+
+**Android (`android/`)** — the shipping implementation. Four modules:
+- `:engine` — pure-Kotlin port of the Python spec (inner life, memory, mood line, grounding, safety, learning log, perspective, personas). 79 JVM tests passing.
+- `:sync` — ECDH pairing, `LinkedDeviceRegistry`, `EnvelopeCipher`, `SyncTransport`. 79 tests passing.
+- `:companion-app` — child-facing app: CameraX HAL, ML Kit face recognition + enrollment UX, TFLite vision classifier (graceful fallback when model absent), Anthropic LLM client, awakening choreographer (Doc 2.3 five-beat sequence), full Compose UI with admin overlay + navigation. Builds to a 110 MB debug APK.
+- `:parent-suite-app` — parent-facing app: Map / Trajectory / Pairing / Settings / PreviewMode screens. Builds to a 58 MB debug APK.
+
+**CI** (`.github/workflows/build-apks.yml`) runs `:engine:test :sync:test` and `pytest tests/` before assembling both APKs; artifacts downloadable from the Actions tab for 90 days.
+
+**What's needed before a real session (no code changes required):**
+- Bundle `mobilenet_v1.tflite` + `labels.txt` in `companion-app/src/main/assets/` to activate real TFLite inference (falls back to `MockVisionClassifier` without it).
+- Enter an Anthropic API key via the admin overlay → "Set API key" (falls back to offline phrases without it).
+- Run enrollment (admin overlay → "Enroll child") on the real device with Naomi's face.
